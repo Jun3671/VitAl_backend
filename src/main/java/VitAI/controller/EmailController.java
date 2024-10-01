@@ -1,9 +1,11 @@
 package VitAI.controller;
 
 import VitAI.dto.EmailDto;
+import VitAI.dto.EmailVerificationDto;
 import VitAI.service.EmailService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -12,14 +14,21 @@ import java.io.UnsupportedEncodingException;
 public class EmailController {
 
     @Autowired
-    private EmailService emailService;  // EmailService 의존성 주입
+    private EmailService emailService;
 
     @ResponseBody
-    @PostMapping("/sign-up/emailCheck") // 이 부분은 각자 바꿔주시면 됩니다.
+    @PostMapping("/sign-up/emailCheck")
     public String emailCheck(@RequestBody EmailDto emailCheckReq) throws MessagingException, UnsupportedEncodingException {
-        // 이메일 인증 코드 생성
-        String authCode = emailService.sendEmail(emailCheckReq.getEmail());
-        // 인증 코드를 직접 반환
-        return authCode;
+        return emailService.sendEmail(emailCheckReq.getEmail());
+    }
+
+    @PostMapping("/sign-up/verifyEmail")
+    public ResponseEntity<String> verifyEmail(@RequestBody EmailVerificationDto verificationDto) {
+        boolean isVerified = emailService.verifyAuthCode(verificationDto.getEmail(), verificationDto.getAuthCode());
+        if (isVerified) {
+            return ResponseEntity.ok("이메일 인증이 완료되었습니다.");
+        } else {
+            return ResponseEntity.badRequest().body("인증 코드가 올바르지 않습니다.");
+        }
     }
 }

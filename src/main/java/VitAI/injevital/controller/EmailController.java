@@ -1,7 +1,7 @@
-package VitAI.controller;
+package VitAI.injevital.controller;
 
-import VitAI.dto.EmailDto;
-import VitAI.service.EmailService;
+import VitAI.injevital.dto.EmailDto;
+import VitAI.injevital.service.EmailService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

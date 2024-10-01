@@ -1,4 +1,4 @@
-package VitAI.dto;
+package VitAI.injevital.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

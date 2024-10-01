@@ -19,7 +19,7 @@ public class Member extends BaseEntity{ //table 역할
 
     @JsonIgnore
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //auto_increment
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //
     private Long id;
 
 

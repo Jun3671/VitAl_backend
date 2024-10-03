@@ -1,4 +1,4 @@
-package VitAI.service;
+package VitAI.injevital.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

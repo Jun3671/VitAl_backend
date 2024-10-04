@@ -17,7 +17,7 @@ import VitAI.injevital.entity.Member;
 
 public class MemberDTO {
 
-    @NotBlank
+    @NotBlank(message = "이메일은 공백일 수 없습니다")
     @Size(min = 3 , max = 50)
     private String memberEmail;
 

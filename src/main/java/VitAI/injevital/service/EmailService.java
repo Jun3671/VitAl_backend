@@ -5,12 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService {
     private final JavaMailSender emailSender;
+    private Map<String, String> authCodes = new HashMap<>();
     private String authNum; // 인증 번호
 
     // 인증번호 8자리 무작위 생성
@@ -50,7 +53,7 @@ public class EmailService {
         // 메일 내용
         String msgOfEmail="";
         msgOfEmail += "<div style='margin:20px;'>";
-        msgOfEmail += "<h1> 안녕하세요 test 입니다. </h1>";
+        msgOfEmail += "<h1> 안녕하세요 VitAi 입니다. </h1>";
         msgOfEmail += "<br>";
         msgOfEmail += "<p>아래 코드를 입력해주세요<p>";
         msgOfEmail += "<br>";
@@ -69,14 +72,19 @@ public class EmailService {
         return message;
     }
 
-    //실제 메일 전송
     public String sendEmail(String email) throws MessagingException, UnsupportedEncodingException {
-
-        //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(email);
-        //실제 메일 전송
         emailSender.send(emailForm);
+        authCodes.put(email, authNum);
+        return authNum;
+    }
 
-        return authNum; //인증 코드 반환
+    public boolean verifyAuthCode(String email, String code) {
+        String storedCode = authCodes.get(email);
+        if (storedCode != null && storedCode.equals(code)) {
+            authCodes.remove(email);
+            return true;
+        }
+        return false;
     }
 }

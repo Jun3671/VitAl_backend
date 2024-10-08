@@ -27,6 +27,9 @@ public class Member extends BaseEntity{ //table 역할
     private String memberEmail;
 
     @Column
+    private String memberId;
+
+    @Column
     private String memberPassword;
 
     @Column
@@ -46,6 +49,7 @@ public class Member extends BaseEntity{ //table 역할
                 .memberPassword(memberDTO.getMemberPassword())
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
+                .memberId(memberDTO.getMemberId())
                 .build();
     }
 }

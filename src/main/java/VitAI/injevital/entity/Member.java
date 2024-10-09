@@ -28,9 +28,6 @@ public class Member extends BaseEntity{ //table 역할
     private String memberEmail;
 
     @Column
-    private String memberId;
-
-    @Column
     private String memberPassword;
 
     @Column
@@ -39,7 +36,7 @@ public class Member extends BaseEntity{ //table 역할
     @Column
     private String memberNumber;
 
-    @Column(name = "activated")
+    @Column(name = "activated", nullable = false)
     private boolean activated = true;
 
     @ManyToMany
@@ -55,7 +52,7 @@ public class Member extends BaseEntity{ //table 역할
                 .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
-                .memberId(memberDTO.getMemberId())
+                .activated(true)
                 .build();
     }
 }

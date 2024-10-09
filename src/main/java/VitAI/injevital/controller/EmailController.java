@@ -10,6 +10,7 @@ import VitAI.injevital.dto.EmailVerificationDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @NoArgsConstructor
@@ -18,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 @RestController
 public class EmailController {
 
+    @Autowired
     private EmailService emailService;  // EmailService 의존성 주입
 
     @ResponseBody

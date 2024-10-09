@@ -36,7 +36,10 @@ public class Member extends BaseEntity{ //table 역할
     private String memberName;
 
     @Column
-    private String memberNumber;
+    private String memberHeight;
+
+    @Column
+    private String memberWeight;
 
     @JsonIgnore
     @Column(name = "activated")
@@ -45,7 +48,8 @@ public class Member extends BaseEntity{ //table 역할
 
     public static Member toMemberEntity(MemberDTO memberDTO){
         return Member.builder()
-                .memberNumber(memberDTO.getMemberNumber())
+                .memberWeight(memberDTO.getMemberWeight())
+                .memberHeight(memberDTO.getMemberHeight())
                 .memberPassword(memberDTO.getMemberPassword())
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())

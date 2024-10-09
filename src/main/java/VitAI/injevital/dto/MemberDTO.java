@@ -17,11 +17,6 @@ import VitAI.injevital.entity.Member;
 
 public class MemberDTO {
 
-
-    @NotBlank
-    @Size(min = 3 , max = 50)
-    private String memberId;
-
     @NotBlank
     @Size(min = 3 , max = 50)
     private String memberEmail;
@@ -45,7 +40,6 @@ public class MemberDTO {
         memberDTO.setMemberPassword(memberEntity.getMemberPassword());
         memberDTO.setMemberName(memberEntity.getMemberName());
         memberDTO.setMemberNumber(memberEntity.getMemberNumber());
-        memberDTO.setMemberId(memberEntity.getMemberId());
         return memberDTO;
     }
 

@@ -4,6 +4,7 @@ import VitAI.injevital.dto.MemberDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 import java.util.Set;
@@ -38,15 +39,20 @@ public class Member extends BaseEntity{ //table 역할
     @Column
     private String memberNumber;
 
-    @JsonIgnore
     @Column(name = "activated")
-    private boolean activated;
+    private boolean activated = true;
 
-
-    public static Member toMemberEntity(MemberDTO memberDTO){
+    @ManyToMany
+    @JoinTable(
+            name = "user_authority",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+    private Set<Authority> authorities;
+    public static Member toMemberEntity(MemberDTO memberDTO , Authority authority , PasswordEncoder passwordEncoder){
         return Member.builder()
+                .authorities(Collections.singleton(authority))
                 .memberNumber(memberDTO.getMemberNumber())
-                .memberPassword(memberDTO.getMemberPassword())
+                .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
                 .memberId(memberDTO.getMemberId())

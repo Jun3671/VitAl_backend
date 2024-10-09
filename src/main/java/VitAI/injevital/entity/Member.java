@@ -36,16 +36,32 @@ public class Member extends BaseEntity{ //table 역할
     private String memberName;
 
     @Column
-    private String memberNumber;
+    private String memberHeight;
+
+    @Column
+    private String memberWeight;
 
     @JsonIgnore
     @Column(name = "activated")
     private boolean activated;
 
+    @Column
+    private String skeletalMuscleMass;  // 골격근량
+
+    @Column
+    private String bodyFatMass;         // 체지방량
+
+    @Column
+    private String bodyFatPercentage;   // 체지방률
+
+    @Column
+    private String bmi;                 // BMI
+
 
     public static Member toMemberEntity(MemberDTO memberDTO){
         return Member.builder()
-                .memberNumber(memberDTO.getMemberNumber())
+                .memberWeight(memberDTO.getMemberWeight())
+                .memberHeight(memberDTO.getMemberHeight())
                 .memberPassword(memberDTO.getMemberPassword())
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())

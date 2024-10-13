@@ -35,7 +35,7 @@ public class MemberController {
     public String loginForm(){
         return "login";
     }
-    @PostMapping("/login")
+    @PostMapping("/member/login")
     public ApiResponse login(@RequestBody LoginRequest memberDTO) {
         try {
             System.out.println(memberDTO.getMemberEmail());

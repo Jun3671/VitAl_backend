@@ -40,18 +40,15 @@ public class MemberService {
         System.out.println(byMemberEmail);
         if(byMemberEmail.isPresent()){
             Member member = byMemberEmail.get();
-            if(member.getMemberPassword().equals(memberDTO.getMemberPassword()))
-            {
-                MemberDTO dto = MemberDTO.toMemberDTO(member);
-
-                return dto;
-            }
-            else {
+            // 비밀번호 비교
+            if (passwordEncoder.matches(memberDTO.getMemberPassword(), member.getMemberPassword())) {
+                return MemberDTO.toMemberDTO(member);
+            } else {
+                // 비밀번호 불일치
                 return null;
             }
-        }
-        else
-        {
+        } else {
+            // 이메일이 존재하지 않는 경우 처리
             return null;
         }
 

@@ -10,8 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("*") // 프론트엔드 URL을 넣어도 됩니다.
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*")
+                .allowedMethods("GET", "POST")
                 .allowCredentials(true);
     }
 }

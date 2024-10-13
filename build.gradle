@@ -38,7 +38,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	compileOnly 'org.projectlombok:lombok'
@@ -62,6 +61,8 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.hibernate.validator:hibernate-validator:7.0.0.Final' // 적절한 버전으로 변경하세요
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.0' // 적절한 버전으로 변경하세요
+
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:3.1.0'
 
 }
 

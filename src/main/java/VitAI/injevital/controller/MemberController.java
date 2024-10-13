@@ -22,13 +22,29 @@ public class MemberController {
         return "save";
     }
     @PostMapping("/member/save")
-    public void save(@RequestBody MemberDTO memberDTO){
-        memberService.save(memberDTO);
+    public ApiResponse save(@RequestBody MemberDTO memberDTO){
+        try {
+            memberService.save(memberDTO);
+            return ApiResponse.success("회원가입 성공");
+        } catch (Exception e) {
+            return ApiResponse.error("회원가입 실패: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/member/login")
+    public String loginForm(){
+        return "login";
     }
     @PostMapping("/member/login")
     public ApiResponse login(@RequestBody LoginRequest memberDTO) {
-        return ApiResponse.success(memberService.login(memberDTO));
+        try {
+            memberService.login(memberDTO);
+            return ApiResponse.success("로그인 성공");
+        } catch (Exception e) {
+            return ApiResponse.error("로그인 실패: " + e.getMessage());
+        }
     }
+
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")

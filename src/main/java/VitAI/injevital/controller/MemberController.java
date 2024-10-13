@@ -38,6 +38,7 @@ public class MemberController {
     @PostMapping("/member/login")
     public ApiResponse login(@RequestBody LoginRequest memberDTO) {
         try {
+            System.out.println(memberDTO.getMemberEmail());
             memberService.login(memberDTO);
             return ApiResponse.success("로그인 성공");
         } catch (Exception e) {

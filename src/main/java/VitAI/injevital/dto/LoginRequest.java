@@ -20,11 +20,4 @@ public class LoginRequest {
     @Size(min = 3 , max = 100)
     private String memberPassword;
 
-    @NotBlank
-    @Size
-    private String memberId;
-
-    @NotBlank
-    @Size(min = 3, max = 50)
-    private String memberName;
 }

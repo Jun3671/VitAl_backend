@@ -36,8 +36,12 @@ public class MemberDTO {
     @Size(min = 3 , max = 50)
     private String memberNumber;
 
+    @NotBlank
+    @Size(min = 3 , max = 50)
     private String memberHeight;
 
+    @NotBlank
+    @Size(min = 3 , max = 50)
     private String memberWeight;
 
 

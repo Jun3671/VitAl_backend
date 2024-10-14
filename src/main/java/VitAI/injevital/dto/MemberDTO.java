@@ -36,6 +36,11 @@ public class MemberDTO {
     @Size(min = 3 , max = 50)
     private String memberNumber;
 
+    private String memberHeight;
+
+    private String memberWeight;
+
+
     public static MemberDTO toMemberDTO(Member memberEntity) {
 
         MemberDTO memberDTO = new MemberDTO();
@@ -43,6 +48,8 @@ public class MemberDTO {
         memberDTO.setMemberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()));
         memberDTO.setMemberName(memberEntity.getMemberName());
         memberDTO.setMemberNumber(memberEntity.getMemberNumber());
+        memberDTO.setMemberHeight(memberEntity.getMemberHeight());
+        memberDTO.setMemberWeight(memberEntity.getMemberWeight());
         return memberDTO;
     }
 

@@ -36,6 +36,12 @@ public class Member extends BaseEntity{ //table 역할
     @Column
     private String memberNumber;
 
+    @Column
+    private String memberHeight;
+
+    @Column
+    protected String memberWeight;
+
     @Column(name = "activated", nullable = false)
     private boolean activated = true;
 

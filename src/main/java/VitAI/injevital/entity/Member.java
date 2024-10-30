@@ -40,7 +40,10 @@ public class Member extends BaseEntity{ //table 역할
     private String memberHeight;
 
     @Column
-    protected String memberWeight;
+    private String memberGender;
+
+    @Column
+    private String memberWeight;
 
     @Column(name = "activated", nullable = false)
     private boolean activated = true;
@@ -56,6 +59,7 @@ public class Member extends BaseEntity{ //table 역할
                 .authorities(Collections.singleton(authority))
                 .memberId(memberDTO.getMemberId())
                 .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
+                .memberGender(memberDTO.getMemberGender())
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
                 .activated(true)

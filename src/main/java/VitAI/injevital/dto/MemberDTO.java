@@ -20,6 +20,11 @@ public class MemberDTO {
 
     private static PasswordEncoder passwordEncoder;
 
+
+    @NotBlank
+    @Size(min = 3 , max = 50)
+    private String memberGender;
+
     @NotBlank
     @Size(min = 3 , max = 50)
     private String memberEmail;
@@ -48,6 +53,7 @@ public class MemberDTO {
     public static MemberDTO toMemberDTO(Member memberEntity) {
 
         MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setMemberGender(memberEntity.getMemberGender());
         memberDTO.setMemberEmail(memberEntity.getMemberEmail());
         memberDTO.setMemberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()));
         memberDTO.setMemberName(memberEntity.getMemberName());

@@ -58,6 +58,8 @@ public class Member extends BaseEntity{ //table 역할
         return Member.builder()
                 .authorities(Collections.singleton(authority))
                 .memberId(memberDTO.getMemberId())
+                .memberWeight(memberDTO.getMemberWeight())
+                .memberHeight(memberDTO.getMemberHeight())
                 .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
                 .memberGender(memberDTO.getMemberGender())
                 .memberName(memberDTO.getMemberName())

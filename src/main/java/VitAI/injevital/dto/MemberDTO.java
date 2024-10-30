@@ -57,7 +57,7 @@ public class MemberDTO {
         memberDTO.setMemberEmail(memberEntity.getMemberEmail());
         memberDTO.setMemberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()));
         memberDTO.setMemberName(memberEntity.getMemberName());
-        memberDTO.setMemberId(memberDTO.getMemberId());
+        memberDTO.setMemberId(memberEntity.getMemberId());
         memberDTO.setMemberHeight(memberEntity.getMemberHeight());
         memberDTO.setMemberWeight(memberEntity.getMemberWeight());
         return memberDTO;

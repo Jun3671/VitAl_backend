@@ -55,7 +55,7 @@ public class MemberDTO {
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setMemberGender(memberEntity.getMemberGender());
         memberDTO.setMemberEmail(memberEntity.getMemberEmail());
-        memberDTO.setMemberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()));
+        // 비밀번호는 DTO에서 제외하거나, 로그인 시 비밀번호 비교에만 사용해야 하므로 설정하지 않음
         memberDTO.setMemberName(memberEntity.getMemberName());
         memberDTO.setMemberId(memberEntity.getMemberId());
         memberDTO.setMemberHeight(memberEntity.getMemberHeight());

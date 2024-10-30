@@ -9,8 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*") // 프론트엔드 URL을 넣어도 됩니다.
-                .allowedMethods("GET", "POST")
-                .allowCredentials(true);
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowCredentials(true); // allowCredentials가 true일 때 allowedOriginPatterns 사용
     }
 }

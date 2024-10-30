@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.LoginException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -22,23 +24,19 @@ public class MemberController {
         return "save";
     }
     @PostMapping("/member/save")
-    public ApiResponse save(@RequestBody MemberDTO memberDTO){
-        try {
+    public void save(@RequestBody MemberDTO memberDTO){
             memberService.save(memberDTO);
-            return ApiResponse.success("회원가입 성공");
-        } catch (Exception e) {
-            return ApiResponse.error("회원가입 실패: " + e.getMessage());
-        }
     }
 
     @GetMapping("/member/login")
     public String loginForm(){
         return "login";
     }
+
+
     @PostMapping("/member/login")
-    public ApiResponse login(@RequestBody LoginRequest memberDTO) {
+    public ApiResponse login(@RequestBody LoginRequest memberDTO) throws LoginException {
         try {
-            System.out.println(memberDTO.getMemberId());
             memberService.login(memberDTO);
             return ApiResponse.success("로그인 성공");
         } catch (Exception e) {

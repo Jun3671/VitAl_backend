@@ -12,9 +12,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class LoginRequest {
-    @NotBlank
-    @Size(min = 3 , max = 50)
-    private String memberEmail;
+
 
     @NotBlank
     @Size(min = 3 , max = 100)
@@ -22,5 +20,5 @@ public class LoginRequest {
 
     @NotBlank
     @Size(min = 3, max = 50)
-    private String memberName;
+    private String memberId;
 }

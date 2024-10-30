@@ -15,37 +15,47 @@ import java.util.Set;
 @Table(name = "member_table")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member extends BaseEntity{ //table 역할
+public class Member { //table 역할
+
 
     @JsonIgnore
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //auto_increment
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //
     private Long id;
 
-
-    @Column(unique = true)
-    private String memberEmail;
+    @Column
+    private String memberId;
 
     @Column
+
     private String memberPassword;
 
     @Column
     private String memberName;
 
-    @Column
-    private String memberNumber;
+    @Column(unique = true)
+    private String memberEmail;
 
-    @JsonIgnore
-    @Column(name = "activated")
-    private boolean activated;
+
+    @Column
+    private String memberHeight;
+
+    @Column
+    protected String memberWeight;
+
+    @Column(name = "activated", nullable = false)
+    private boolean activated = true;
 
 
     public static Member toMemberEntity(MemberDTO memberDTO){
         return Member.builder()
-                .memberNumber(memberDTO.getMemberNumber())
-                .memberPassword(memberDTO.getMemberPassword())
+                .memberId((memberDTO.getMemberId()))
+                .memberPassword((memberDTO.getMemberPassword()))
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
+                .memberHeight(memberDTO.getMemberHeight())
+                .memberWeight(memberDTO.getMemberWeight())
+                .activated(true)
                 .build();
     }
 }

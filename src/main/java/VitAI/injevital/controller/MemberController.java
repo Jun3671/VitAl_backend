@@ -7,6 +7,8 @@ import VitAI.injevital.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.LoginException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -22,7 +24,7 @@ public class MemberController {
         memberService.save(memberDTO);
     }
     @PostMapping("/member/login")
-    public ApiResponse login(@RequestBody LoginRequest memberDTO) {
+    public ApiResponse login(@RequestBody LoginRequest memberDTO) throws LoginException {
 
         return ApiResponse.success(memberService.login(memberDTO));
 

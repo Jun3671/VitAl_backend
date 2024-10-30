@@ -50,14 +50,15 @@ public class MemberService {
 
         Member member = byMemberId.get();
 
-        // 비밀번호가 일치하지 않는 경우
-        if (!member.getMemberPassword().equals(memberDTO.getMemberPassword())) {
+        // PasswordEncoder를 사용하여 비밀번호 검증
+        if (!passwordEncoder.matches(memberDTO.getMemberPassword(), member.getMemberPassword())) {
             throw new LoginException("비밀번호가 일치하지 않습니다.");
         }
 
         // 로그인 성공
         return MemberDTO.toMemberDTO(member);
     }
+
 
     // 컨트롤러에서 예외 처리
     @ExceptionHandler(LoginException.class)

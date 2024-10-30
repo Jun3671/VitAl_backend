@@ -14,13 +14,11 @@ import lombok.ToString;
 public class LoginRequest {
     @NotBlank
     @Size(min = 3 , max = 50)
-    private String memberEmail;
+    private String memberId;
 
     @NotBlank
     @Size(min = 3 , max = 100)
     private String memberPassword;
 
-    @NotBlank
-    @Size(min = 3, max = 50)
-    private String memberName;
+
 }

@@ -34,7 +34,7 @@ public class MemberDTO {
 
     @NotBlank
     @Size(min = 3 , max = 50)
-    private String memberNumber;
+    private String memberId;
 
     @NotBlank
     @Size(min = 3 , max = 50)
@@ -51,7 +51,7 @@ public class MemberDTO {
         memberDTO.setMemberEmail(memberEntity.getMemberEmail());
         memberDTO.setMemberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()));
         memberDTO.setMemberName(memberEntity.getMemberName());
-        memberDTO.setMemberNumber(memberEntity.getMemberNumber());
+        memberDTO.setMemberId(memberEntity.getMemberId());
         memberDTO.setMemberHeight(memberEntity.getMemberHeight());
         memberDTO.setMemberWeight(memberEntity.getMemberWeight());
         return memberDTO;

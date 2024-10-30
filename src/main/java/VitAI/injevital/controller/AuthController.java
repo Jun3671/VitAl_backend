@@ -30,7 +30,7 @@ public class AuthController {
     public ResponseEntity<TokenDto> authorize(@Valid @RequestBody LoginRequest loginRequest) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequest.getMemberEmail(), loginRequest.getMemberPassword());
+                new UsernamePasswordAuthenticationToken(loginRequest.getMemberId(), loginRequest.getMemberPassword());
         System.out.println("authenticationToken = " + authenticationToken);
         // authenticate 메소드가 실행이 될 때 CustomUserDetailsService class의 loadUserByUsername 메소드가 실행
         // 해당 객체를 SecurityContextHolder에 저장하고

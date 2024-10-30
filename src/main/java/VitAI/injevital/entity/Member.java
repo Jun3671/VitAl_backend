@@ -34,7 +34,7 @@ public class Member extends BaseEntity{ //table 역할
     private String memberName;
 
     @Column
-    private String memberNumber;
+    private String memberId;
 
     @Column
     private String memberHeight;
@@ -54,7 +54,7 @@ public class Member extends BaseEntity{ //table 역할
     public static Member toMemberEntity(MemberDTO memberDTO , Authority authority , PasswordEncoder passwordEncoder){
         return Member.builder()
                 .authorities(Collections.singleton(authority))
-                .memberNumber(memberDTO.getMemberNumber())
+                .memberId(memberDTO.getMemberId())
                 .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())

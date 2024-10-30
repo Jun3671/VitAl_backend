@@ -8,10 +8,14 @@ import VitAI.injevital.jwt.SecurityUtil;
 import VitAI.injevital.repository.AuthorityRepository;
 import VitAI.injevital.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.security.auth.login.LoginException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,23 +39,31 @@ public class MemberService {
         memberRepository.save(memberEntity);
     }
 
-    public MemberDTO login(LoginRequest memberDTO){
-        Optional<Member> byMemberEmail = memberRepository.findByMemberEmail(memberDTO.getMemberEmail());
-        System.out.println(byMemberEmail);
-        if(byMemberEmail.isPresent()){
-            Member member = byMemberEmail.get();
-            // 비밀번호 비교
-            if (passwordEncoder.matches(memberDTO.getMemberPassword(), member.getMemberPassword())) {
-                return MemberDTO.toMemberDTO(member);
-            } else {
-                // 비밀번호 불일치
-                return null;
-            }
-        } else {
-            // 이메일이 존재하지 않는 경우 처리
-            return null;
+    public MemberDTO login(LoginRequest memberDTO) throws LoginException {
+        // memberId로 회원 찾기
+        Optional<Member> byMemberId = memberRepository.findByMemberId(memberDTO.getMemberId());
+
+        // 회원이 존재하지 않는 경우
+        if (byMemberId.isEmpty()) {
+            throw new LoginException("존재하지 않는 회원 아이디입니다.");
         }
 
+        Member member = byMemberId.get();
+
+        // 비밀번호가 일치하지 않는 경우
+        if (!member.getMemberPassword().equals(memberDTO.getMemberPassword())) {
+            throw new LoginException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 로그인 성공
+        return MemberDTO.toMemberDTO(member);
+    }
+
+    // 컨트롤러에서 예외 처리
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<String> handleLoginException(LoginException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(e.getMessage());
     }
 
     @Transactional(readOnly = true)

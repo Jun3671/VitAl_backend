@@ -52,9 +52,9 @@ public class MemberController {
         try {
             boolean exists = emailService.isIdExist(id);
             if (exists) {
-                return ApiResponse.error("이미 사용 중인 이메일입니다.");
+                return ApiResponse.error("이미 사용 중인 아이디입니다.");
             } else {
-                return ApiResponse.success("사용 가능한 이메일입니다.");
+                return ApiResponse.success("사용 가능한 아이디입니다.");
             }
         } catch (Exception e) {
             return ApiResponse.error("아이디 중복 확인 중 오류가 발생했습니다: " + e.getMessage());

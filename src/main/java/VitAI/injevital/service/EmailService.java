@@ -1,6 +1,8 @@
 package VitAI.injevital.service;
+import VitAI.injevital.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,10 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
+
+    private final MemberRepository memberRepository;
+
+
     private final JavaMailSender emailSender;
     private Map<String, String> authCodes = new HashMap<>();
     private String authNum; // 인증 번호
@@ -87,4 +93,9 @@ public class EmailService {
         }
         return false;
     }
+
+    public boolean isIdExist(String id) {
+        return memberRepository.existsByMemberId(id);
+    }
+
 }

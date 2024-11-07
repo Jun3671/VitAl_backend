@@ -26,8 +26,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     public void save(MemberDTO memberDTO){
-
-
         //repository save 메서드 호출
         Member memberEntity = Member.toMemberEntity(memberDTO , passwordEncoder);
         memberRepository.save(memberEntity);

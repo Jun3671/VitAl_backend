@@ -61,16 +61,4 @@ public class MemberController {
         }
     }
 
-
-    @GetMapping("/user")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<Member> getMyUserInfo() {
-        return ResponseEntity.ok(memberService.getMyUserWithAuthorities().get());
-    }
-
-    @GetMapping("/user/{username}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<Member> getUserInfo(@PathVariable String username) {
-        return ResponseEntity.ok(memberService.getUserWithAuthorities(username).get());
-    }
 }

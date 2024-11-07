@@ -6,9 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collections;
-import java.util.Set;
-
 @Entity
 @Builder
 @Getter
@@ -24,8 +21,14 @@ public class Member extends BaseEntity{ //table 역할
     private Long id;
 
 
+    @Column
+    private String memberGender;
+
     @Column(unique = true)
     private String memberEmail;
+
+    @Column
+    private String memberId;
 
     @Column
     private String memberPassword;
@@ -34,37 +37,30 @@ public class Member extends BaseEntity{ //table 역할
     private String memberName;
 
     @Column
-    private String memberId;
+    private String memberNumber;
 
     @Column
     private String memberHeight;
 
     @Column
-    private String memberGender;
-
-    @Column
     private String memberWeight;
 
-    @Column(name = "activated", nullable = false)
-    private boolean activated = true;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_authority",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
-    public static Member toMemberEntity(MemberDTO memberDTO , Authority authority , PasswordEncoder passwordEncoder){
+    @JsonIgnore
+    @Column(name = "activated")
+    private boolean activated;
+
+
+    public static Member toMemberEntity(MemberDTO memberDTO, PasswordEncoder passwordEncoder){
         return Member.builder()
-                .authorities(Collections.singleton(authority))
-                .memberId(memberDTO.getMemberId())
-                .memberWeight(memberDTO.getMemberWeight())
-                .memberHeight(memberDTO.getMemberHeight())
-                .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
-                .memberGender(memberDTO.getMemberGender())
+                .memberNumber(memberDTO.getMemberNumber())
+                .memberPassword(memberDTO.getMemberPassword())
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
-                .activated(true)
+                .memberId(memberDTO.getMemberId())
+                .memberHeight(memberDTO.getMemberHeight())
+                .memberWeight(memberDTO.getMemberWeight())
+                .memberGender(memberDTO.getMemberGender())
                 .build();
     }
 }

@@ -4,7 +4,6 @@ import VitAI.injevital.dto.LoginRequest;
 import VitAI.injevital.dto.MemberDTO;
 import VitAI.injevital.entity.Authority;
 import VitAI.injevital.entity.Member;
-import VitAI.injevital.jwt.SecurityUtil;
 import VitAI.injevital.repository.AuthorityRepository;
 import VitAI.injevital.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,7 @@ public class MemberService {
         authorityRepository.save(authority);
 
         //repository save 메서드 호출
-        Member memberEntity = Member.toMemberEntity(memberDTO , authority , passwordEncoder);
+        Member memberEntity = Member.toMemberEntity(memberDTO , passwordEncoder);
         memberRepository.save(memberEntity);
     }
 
@@ -60,22 +59,7 @@ public class MemberService {
     }
 
 
-    // 컨트롤러에서 예외 처리
-    @ExceptionHandler(LoginException.class)
-    public ResponseEntity<String> handleLoginException(LoginException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(e.getMessage());
-    }
 
-    @Transactional(readOnly = true)
-    public Optional<Member> getUserWithAuthorities(String username) {
-        return memberRepository.findOneWithAuthoritiesByMemberName(username);
-    }
 
-    // 현재 securityContext에 저장된 username의 정보만 가져오는 메소드
-    @Transactional(readOnly = true)
-    public Optional<Member> getMyUserWithAuthorities() {
-        return SecurityUtil.getCurrentUsername()
-                .flatMap(memberRepository::findOneWithAuthoritiesByMemberName);
-    }
+
 }

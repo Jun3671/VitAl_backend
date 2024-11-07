@@ -49,6 +49,11 @@ public class MemberDTO {
     @Size(min = 3 , max = 50)
     private String memberWeight;
 
+    @NotBlank
+    @Size(min = 3 , max = 50)
+    private String memberNumber;
+
+
 
     public static MemberDTO toMemberDTO(Member memberEntity) {
 

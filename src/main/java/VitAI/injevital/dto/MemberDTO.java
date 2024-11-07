@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import VitAI.injevital.entity.Member;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @NoArgsConstructor
 @Getter
@@ -18,12 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class MemberDTO {
 
-    private static PasswordEncoder passwordEncoder;
-
 
     @NotBlank
     @Size(min = 3 , max = 50)
-    private String memberGender;
+    private String memberId;
 
     @NotBlank
     @Size(min = 3 , max = 50)
@@ -39,27 +36,16 @@ public class MemberDTO {
 
     @NotBlank
     @Size(min = 3 , max = 50)
-    private String memberId;
-
-    @NotBlank
-    @Size(min = 3 , max = 50)
-    private String memberHeight;
-
-    @NotBlank
-    @Size(min = 3 , max = 50)
-    private String memberWeight;
-
+    private String memberNumber;
 
     public static MemberDTO toMemberDTO(Member memberEntity) {
 
         MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setMemberGender(memberEntity.getMemberGender());
         memberDTO.setMemberEmail(memberEntity.getMemberEmail());
         memberDTO.setMemberPassword(memberEntity.getMemberPassword());
         memberDTO.setMemberName(memberEntity.getMemberName());
+        memberDTO.setMemberNumber(memberEntity.getMemberNumber());
         memberDTO.setMemberId(memberEntity.getMemberId());
-        memberDTO.setMemberHeight(memberEntity.getMemberHeight());
-        memberDTO.setMemberWeight(memberEntity.getMemberWeight());
         return memberDTO;
     }
 

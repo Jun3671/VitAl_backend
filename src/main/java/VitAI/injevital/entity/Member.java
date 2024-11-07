@@ -54,9 +54,8 @@ public class Member extends BaseEntity{ //table 역할
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
-    public static Member toMemberEntity(MemberDTO memberDTO , Authority authority , PasswordEncoder passwordEncoder){
+    public static Member toMemberEntity(MemberDTO memberDTO , PasswordEncoder passwordEncoder){
         return Member.builder()
-                .authorities(Collections.singleton(authority))
                 .memberId(memberDTO.getMemberId())
                 .memberWeight(memberDTO.getMemberWeight())
                 .memberHeight(memberDTO.getMemberHeight())

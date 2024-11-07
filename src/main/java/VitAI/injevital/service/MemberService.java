@@ -25,13 +25,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthorityRepository authorityRepository;
     public void save(MemberDTO memberDTO){
 
-        Authority authority = Authority.builder()
-                .authorityName("ROLE_USER")
-                .build();
-        authorityRepository.save(authority);
 
         //repository save 메서드 호출
         Member memberEntity = Member.toMemberEntity(memberDTO , passwordEncoder);

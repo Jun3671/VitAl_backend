@@ -43,11 +43,11 @@ public class MemberDTO {
 
     @NotBlank
     @Size(min = 3 , max = 50)
-    private String memberHeight;
+    private double memberHeight;
 
     @NotBlank
     @Size(min = 3 , max = 50)
-    private String memberWeight;
+    private double memberWeight;
 
 
     public static MemberDTO toMemberDTO(Member memberEntity) {
@@ -58,8 +58,8 @@ public class MemberDTO {
         memberDTO.setMemberPassword(memberEntity.getMemberPassword());
         memberDTO.setMemberName(memberEntity.getMemberName());
         memberDTO.setMemberId(memberEntity.getMemberId());
-        memberDTO.setMemberHeight(memberEntity.getMemberHeight());
-        memberDTO.setMemberWeight(memberEntity.getMemberWeight());
+        memberDTO.setMemberHeight(Double.parseDouble(memberEntity.getMemberHeight()));
+        memberDTO.setMemberWeight(Double.parseDouble(memberEntity.getMemberWeight()));
         return memberDTO;
     }
 

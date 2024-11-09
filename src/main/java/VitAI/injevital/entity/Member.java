@@ -45,6 +45,18 @@ public class Member extends BaseEntity{ //table 역할
     @Column
     private double memberWeight;
 
+    @Column
+    private double memberSmm;   // 골격근량
+
+    @Column
+    private double memberBfm;   // 체지방량
+
+    @Column
+    private double memberBfp;   // 체지방률
+
+    @Column
+    private double memberBmi;   // bmi
+
     @Builder.Default
     private boolean activated = true;;
 
@@ -63,6 +75,10 @@ public class Member extends BaseEntity{ //table 역할
                 .memberGender(memberDTO.getMemberGender())
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
+                .memberSmm(memberDTO.getMemberSmm())
+                .memberBfm(memberDTO.getMemberBfm())
+                .memberBfp(memberDTO.getMemberBfp())
+                .memberBmi(memberDTO.getMemberBmi())
                 .activated(true)
                 .build();
     }

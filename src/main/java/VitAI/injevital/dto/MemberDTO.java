@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import VitAI.injevital.entity.Member;
+import org.checkerframework.checker.units.qual.N;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @NoArgsConstructor
@@ -50,6 +51,26 @@ public class MemberDTO {
     private double memberWeight;
 
 
+    @NotBlank
+    @Size(min = 3 , max = 50)
+    private double memberSmm;   // 골격근량
+
+
+    @NotBlank
+    @Size(min = 3 , max = 50)
+    private double memberBfm;   //체지방량
+
+    @NotBlank
+    @Size(min = 3 , max = 50)
+    private double memberBfp;   // 체지방률
+
+    @NotBlank
+    @Size(min = 3 , max = 50)
+    private double memberBmi;   // bmi
+
+
+
+
     public static MemberDTO toMemberDTO(Member memberEntity) {
 
         MemberDTO memberDTO = new MemberDTO();
@@ -60,6 +81,10 @@ public class MemberDTO {
         memberDTO.setMemberId(memberEntity.getMemberId());
         memberDTO.setMemberHeight(memberEntity.getMemberHeight());
         memberDTO.setMemberWeight(memberEntity.getMemberWeight());
+        memberDTO.setMemberSmm(memberEntity.getMemberSmm());
+        memberDTO.setMemberBfm(memberEntity.getMemberBfm());
+        memberDTO.setMemberBfp(memberEntity.getMemberBfp());
+        memberDTO.setMemberBmi(memberEntity.getMemberBmi());
         return memberDTO;
     }
 

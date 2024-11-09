@@ -63,9 +63,10 @@ public class MemberController {
 
     @PostMapping("/update/physical-info")
     public ApiResponse updatePhysicalInfo(
-            @RequestBody MemberDTO memberDTO) {
+            @RequestBody MemberDTO memberDTO,
+            @RequestHeader("Authorization") String token) {
         try {
-            memberService.updatePhysicalInfo(memberDTO, memberDTO.getMemberId());
+            memberService.updatePhysicalInfo(memberDTO, token);
             return ApiResponse.success("회원 정보가 수정되었습니다");
         } catch (Exception e) {
             return ApiResponse.error("회원 정보 수정 실패: " + e.getMessage());

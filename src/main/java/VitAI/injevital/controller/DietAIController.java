@@ -38,8 +38,8 @@ public class DietAIController {
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
         // BMI 및 일일 칼로리 계산
-        double height = Double.parseDouble(member.getMemberHeight());
-        double weight = Double.parseDouble(member.getMemberWeight());
+        double height = Double.parseDouble(String.valueOf(member.getMemberHeight()));
+        double weight = Double.parseDouble(String.valueOf(member.getMemberWeight()));
         double bmi = calculateBMI(height, weight);
         double dailyCalories = calculateDailyCalories(weight, height, request.getGoal());
 

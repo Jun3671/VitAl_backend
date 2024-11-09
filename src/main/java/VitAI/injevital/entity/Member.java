@@ -45,8 +45,8 @@ public class Member extends BaseEntity{ //table 역할
     @Column
     private double memberWeight;
 
-    @Column(name = "activated", nullable = false)
-    private boolean activated = true;
+    @Builder.Default
+    private boolean activated = true;;
 
     @ManyToMany
     @JoinTable(

@@ -75,10 +75,6 @@ public class Member extends BaseEntity{ //table 역할
                 .memberGender(memberDTO.getMemberGender())
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
-                .memberSmm(memberDTO.getMemberSmm())
-                .memberBfm(memberDTO.getMemberBfm())
-                .memberBfp(memberDTO.getMemberBfp())
-                .memberBmi(memberDTO.getMemberBmi())
                 .activated(true)
                 .build();
     }

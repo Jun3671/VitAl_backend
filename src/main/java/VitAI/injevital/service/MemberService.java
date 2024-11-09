@@ -1,6 +1,7 @@
 package VitAI.injevital.service;
 
 import VitAI.injevital.dto.LoginRequest;
+import VitAI.injevital.dto.MemberBodyInfoDTO;
 import VitAI.injevital.dto.MemberDTO;
 import VitAI.injevital.entity.Authority;
 import VitAI.injevital.entity.Member;
@@ -8,6 +9,7 @@ import VitAI.injevital.jwt.SecurityUtil;
 import VitAI.injevital.repository.AuthorityRepository;
 import VitAI.injevital.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
+    private final ModelMapper modelMapper;
     public void save(MemberDTO memberDTO){
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")
@@ -128,6 +131,11 @@ public class MemberService {
             }
             member.setMemberBfp(memberDTO.getMemberBfp());
         }
+    }
+
+    public MemberBodyInfoDTO getBodyInfo(String username) {
+        Member member = memberRepository.findByUsername(username);
+        return modelMapper.map(member, MemberBodyInfoDTO.class);
     }
 
 }

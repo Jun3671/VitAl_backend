@@ -2,6 +2,7 @@ package VitAI.injevital.controller;
 
 import VitAI.injevital.dto.ApiResponse;
 import VitAI.injevital.dto.LoginRequest;
+import VitAI.injevital.dto.MemberBodyInfoDTO;
 import VitAI.injevital.dto.MemberDTO;
 import VitAI.injevital.entity.Member;
 import VitAI.injevital.service.EmailService;
@@ -9,7 +10,10 @@ import VitAI.injevital.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
@@ -70,4 +74,13 @@ public class MemberController {
             return ApiResponse.error("회원 정보 수정 실패: " + e.getMessage());
         }
     }
+
+    @GetMapping("/member/body-info")
+    public ResponseEntity<MemberBodyInfoDTO> getMemberBodyInfo(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        // 현재 로그인한 사용자의 정보 조회
+        MemberBodyInfoDTO bodyInfo = memberService.getBodyInfo(userDetails.getUsername());
+        return ResponseEntity.ok(bodyInfo);
+    }
+
 }

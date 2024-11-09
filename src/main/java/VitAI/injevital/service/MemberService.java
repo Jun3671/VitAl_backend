@@ -51,7 +51,47 @@ public class MemberService {
         return MemberDTO.toMemberDTO(member);
     }
 
+    @Transactional
+    public MemberDTO updatePhysicalInfo(MemberDTO memberDTO, String username) throws Exception {
+        Member member = memberRepository.findByMemberId(username)
+                .orElseThrow(() -> new Exception("회원을 찾을 수 없습니다."));
 
+        // 신체 정보 업데이트
+        if (memberDTO.getMemberHeight() <= 0 || memberDTO.getMemberWeight() <= 0) {
+            throw new Exception("키와 체중은 0보다 커야 합니다.");
+        }
+
+        member.setMemberHeight(memberDTO.getMemberHeight());
+        member.setMemberWeight(memberDTO.getMemberWeight());
+
+        // BMI 계산 (체중(kg) / 키(m)²)
+        double heightInMeter = member.getMemberHeight() / 100;
+        double bmi = member.getMemberWeight() / (heightInMeter * heightInMeter);
+        member.setMemberBmi(Math.round(bmi * 100) / 100.0);  // 소수점 둘째자리까지
+
+        // 골격근량, 체지방량, 체지방률 업데이트
+        if (memberDTO.getMemberSmm() != null) {
+            if (memberDTO.getMemberSmm() < 0) {
+                throw new Exception("골격근량은 0보다 작을 수 없습니다.");
+            }
+            member.setMemberSmm(memberDTO.getMemberSmm());
+        }
+        if (memberDTO.getMemberBfm() != null) {
+            if (memberDTO.getMemberBfm() < 0) {
+                throw new Exception("체지방량은 0보다 작을 수 없습니다.");
+            }
+            member.setMemberBfm(memberDTO.getMemberBfm());
+        }
+        if (memberDTO.getMemberBfp() != null) {
+            if (memberDTO.getMemberBfp() < 0 || memberDTO.getMemberBfp() > 100) {
+                throw new Exception("체지방률은 0에서 100 사이여야 합니다.");
+            }
+            member.setMemberBfp(memberDTO.getMemberBfp());
+        }
+
+        Member updatedMember = memberRepository.save(member);
+        return MemberDTO.toMemberDTO(updatedMember);
+    }
 
 
 

@@ -61,4 +61,14 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/update/physical-info")
+    public ApiResponse updatePhysicalInfo(
+            @RequestBody MemberDTO memberDTO) {
+        try {
+            memberService.updatePhysicalInfo(memberDTO, memberDTO.getMemberId());
+            return ApiResponse.success("회원 정보가 수정되었습니다");
+        } catch (Exception e) {
+            return ApiResponse.error("회원 정보 수정 실패: " + e.getMessage());
+        }
+    }
 }

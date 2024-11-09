@@ -58,8 +58,8 @@ public class MemberDTO {
         memberDTO.setMemberPassword(memberEntity.getMemberPassword());
         memberDTO.setMemberName(memberEntity.getMemberName());
         memberDTO.setMemberId(memberEntity.getMemberId());
-        memberDTO.setMemberHeight(Double.parseDouble(memberEntity.getMemberHeight()));
-        memberDTO.setMemberWeight(Double.parseDouble(memberEntity.getMemberWeight()));
+        memberDTO.setMemberHeight(memberEntity.getMemberHeight());
+        memberDTO.setMemberWeight(memberEntity.getMemberWeight());
         return memberDTO;
     }
 

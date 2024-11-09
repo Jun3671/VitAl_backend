@@ -1,6 +1,7 @@
 package VitAI.injevital.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -51,22 +52,17 @@ public class MemberDTO {
     private double memberWeight;
 
 
-    @NotBlank
-    @Size(min = 3 , max = 50)
-    private double memberSmm;   // 골격근량
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double memberSmm;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double memberBfm;
 
-    @NotBlank
-    @Size(min = 3 , max = 50)
-    private double memberBfm;   //체지방량
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double memberBfp;
 
-    @NotBlank
-    @Size(min = 3 , max = 50)
-    private double memberBfp;   // 체지방률
-
-    @NotBlank
-    @Size(min = 3 , max = 50)
-    private double memberBmi;   // bmi
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double memberBmi;
 
 
 

@@ -37,13 +37,13 @@ public class Member extends BaseEntity{ //table 역할
     private String memberId;
 
     @Column
-    private String memberHeight;
+    private double memberHeight;
 
     @Column
     private String memberGender;
 
     @Column
-    private String memberWeight;
+    private double memberWeight;
 
     @Column(name = "activated", nullable = false)
     private boolean activated = true;

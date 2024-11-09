@@ -27,7 +27,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
-    private final ModelMapper modelMapper;
     public void save(MemberDTO memberDTO){
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")
@@ -133,9 +132,5 @@ public class MemberService {
         }
     }
 
-    public MemberBodyInfoDTO getBodyInfo(String username) {
-        Member member = memberRepository.findByUsername(username);
-        return modelMapper.map(member, MemberBodyInfoDTO.class);
-    }
 
 }

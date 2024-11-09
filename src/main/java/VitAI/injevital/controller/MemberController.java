@@ -75,12 +75,6 @@ public class MemberController {
         }
     }
 
-    @GetMapping("/member/body-info")
-    public ResponseEntity<MemberBodyInfoDTO> getMemberBodyInfo(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        // 현재 로그인한 사용자의 정보 조회
-        MemberBodyInfoDTO bodyInfo = memberService.getBodyInfo(userDetails.getUsername());
-        return ResponseEntity.ok(bodyInfo);
-    }
+
 
 }

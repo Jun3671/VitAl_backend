@@ -57,7 +57,7 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberDTO updatePhysicalInfo(MemberDTO memberDTO, String token) throws Exception {
+    public MemberDTO updatePhysicalInfo(MemberDTO memberDTO) throws Exception {
         // 현재 로그인한 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {

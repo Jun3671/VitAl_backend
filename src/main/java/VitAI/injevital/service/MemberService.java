@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.helpers.AbstractLogger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,6 +35,8 @@ public class MemberService {
     private final AuthorityRepository authorityRepository;
     private final ModelMapper modelMapper;
     private final TokenProvider tokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    
     private AbstractLogger log;
 
 
@@ -49,48 +52,31 @@ public class MemberService {
     }
 
     public LoginResponse login(LoginRequest memberDTO) throws LoginException {
-        log.info("로그인 서비스 시작");
+        try {
+            // Authentication 객체 생성
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(memberDTO.getMemberId(), memberDTO.getMemberPassword());
 
-        // memberId로 회원 찾기
-        Optional<Member> byMemberId = memberRepository.findByMemberId(memberDTO.getMemberId());
+            // 인증 처리
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 회원이 존재하지 않는 경우
-        if (byMemberId.isEmpty()) {
-            throw new LoginException("존재하지 않는 회원 아이디입니다.");
+            // 토큰 생성
+            String jwt = tokenProvider.createToken(authentication);
+
+            // 회원 정보 조회
+            Member member = memberRepository.findByMemberId(memberDTO.getMemberId())
+                    .orElseThrow(() -> new LoginException("존재하지 않는 회원입니다."));
+
+            // 응답 데이터 생성
+            LoginResponse loginResponse = new LoginResponse();
+            loginResponse.setMemberInfo(MemberDTO.toMemberDTO(member));
+            loginResponse.setTokenDto(new TokenDto(jwt));
+
+            return loginResponse;
+        } catch (Exception e) {
+            throw new LoginException(e.getMessage());
         }
-
-        Member member = byMemberId.get();
-        log.info("회원 조회 성공: {}", member.getMemberId());
-
-        // PasswordEncoder를 사용하여 비밀번호 검증
-        if (!passwordEncoder.matches(memberDTO.getMemberPassword(), member.getMemberPassword())) {
-            throw new LoginException("비밀번호가 일치하지 않습니다.");
-        }
-        log.info("비밀번호 검증 성공");
-
-        // 권한 정보 생성
-        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
-                .collect(Collectors.toList());
-        log.info("권한 정보 생성: {}", grantedAuthorities);
-
-        // Authentication 객체 생성
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                member.getMemberId(),
-                null,
-                grantedAuthorities
-        );
-
-        // JWT 토큰 생성
-        String token = tokenProvider.createToken(authentication);
-        log.info("토큰 생성 성공");
-
-        // 응답 데이터 생성
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setMemberInfo(MemberDTO.toMemberDTO(member));
-        loginResponse.setTokenDto(new TokenDto(token));
-
-        return loginResponse;
     }
 
     @Transactional

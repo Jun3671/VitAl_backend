@@ -2,9 +2,11 @@ package VitAI.injevital.controller;
 
 import VitAI.injevital.dto.*;
 import VitAI.injevital.entity.Member;
+import VitAI.injevital.jwt.JwtFilter;
 import VitAI.injevital.service.EmailService;
 import VitAI.injevital.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,13 +41,25 @@ public class MemberController {
     }
 
 
-    @PostMapping("/member/login")
-    public ApiResponse login(@RequestBody LoginRequest loginRequest) {
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest) {
         try {
             LoginResponse loginResponse = memberService.login(loginRequest);
-            return ApiResponse.success(loginResponse);
-        } catch (LoginException e) {
-            return ApiResponse.error(e.getMessage());
+
+            // 헤더 설정
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + loginResponse.getTokenDto().getToken());
+
+            // ApiResponse 성공 응답 생성
+            ApiResponse response = ApiResponse.success(loginResponse);
+
+            return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
+
+        } catch (Exception e) {
+            // ApiResponse 에러 응답 생성
+            ApiResponse response = ApiResponse.error(e.getMessage());
+
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
     }
 

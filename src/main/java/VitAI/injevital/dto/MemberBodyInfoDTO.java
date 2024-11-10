@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class MemberBodyInfoDTO {
+    private String memberName;
+    private String memberEmail;
+    private String memberGender;
     private double memberHeight;
     private double memberWeight;
     private Double memberSmm;

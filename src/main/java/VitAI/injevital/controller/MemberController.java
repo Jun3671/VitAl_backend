@@ -41,7 +41,7 @@ public class MemberController {
     }
 
 
-    @PostMapping("member/login")
+    @PostMapping("/member/login")
     public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest) {
         try {
             LoginResponse loginResponse = memberService.login(loginRequest);

@@ -1,9 +1,6 @@
 package VitAI.injevital.controller;
 
-import VitAI.injevital.dto.ApiResponse;
-import VitAI.injevital.dto.LoginRequest;
-import VitAI.injevital.dto.MemberBodyInfoDTO;
-import VitAI.injevital.dto.MemberDTO;
+import VitAI.injevital.dto.*;
 import VitAI.injevital.entity.Member;
 import VitAI.injevital.service.EmailService;
 import VitAI.injevital.service.MemberService;
@@ -42,13 +39,13 @@ public class MemberController {
     }
 
 
-    @PostMapping("/member/login")
-    public ApiResponse login(@RequestBody LoginRequest memberDTO) throws LoginException {
+    @PostMapping("/login")
+    public ApiResponse login(@RequestBody LoginRequest loginRequest) {
         try {
-            memberService.login(memberDTO);
-            return ApiResponse.success("로그인 성공");
-        } catch (Exception e) {
-            return ApiResponse.error("로그인 실패: " + e.getMessage());
+            LoginResponse loginResponse = memberService.login(loginRequest);
+            return ApiResponse.success(loginResponse);
+        } catch (LoginException e) {
+            return ApiResponse.error(e.getMessage());
         }
     }
 

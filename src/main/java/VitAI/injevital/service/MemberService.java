@@ -1,23 +1,27 @@
 package VitAI.injevital.service;
 
-import VitAI.injevital.dto.LoginRequest;
-import VitAI.injevital.dto.MemberBodyInfoDTO;
-import VitAI.injevital.dto.MemberDTO;
+import VitAI.injevital.dto.*;
 import VitAI.injevital.entity.Authority;
 import VitAI.injevital.entity.Member;
 import VitAI.injevital.jwt.SecurityUtil;
+import VitAI.injevital.jwt.TokenProvider;
 import VitAI.injevital.repository.AuthorityRepository;
 import VitAI.injevital.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.LoginException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final AuthorityRepository authorityRepository;
     private final ModelMapper modelMapper;
+    private final TokenProvider tokenProvider;
+
+
     public void save(MemberDTO memberDTO){
         Authority authority = Authority.builder()
                 .authorityName("ROLE_USER")
@@ -39,7 +46,7 @@ public class MemberService {
         memberRepository.save(memberEntity);
     }
 
-    public MemberDTO login(LoginRequest memberDTO) throws LoginException {
+    public LoginResponse login(LoginRequest memberDTO) throws LoginException {
         // memberId로 회원 찾기
         Optional<Member> byMemberId = memberRepository.findByMemberId(memberDTO.getMemberId());
 
@@ -55,8 +62,27 @@ public class MemberService {
             throw new LoginException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 로그인 성공
-        return MemberDTO.toMemberDTO(member);
+        // 권한 정보 생성
+        List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
+                .collect(Collectors.toList());
+
+        // Authentication 객체 생성
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                member.getMemberId(),
+                null,
+                grantedAuthorities
+        );
+
+        // JWT 토큰 생성
+        String token = tokenProvider.createToken(authentication);
+
+        // 응답 데이터 생성
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setMemberInfo(MemberDTO.toMemberDTO(member));
+        loginResponse.setTokenDto(new TokenDto(token));
+
+        return loginResponse;
     }
 
     @Transactional

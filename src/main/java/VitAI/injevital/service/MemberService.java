@@ -102,7 +102,7 @@ public class MemberService {
         member.setMemberWeight(memberDTO.getMemberWeight());
 
         // BMI 계산 및 업데이트
-        updateBMI(member);
+        member.setMemberBmi(memberDTO.getMemberBmi());
 
         // 추가 신체 정보 업데이트
         updateAdditionalPhysicalInfo(member, memberDTO);
@@ -120,10 +120,14 @@ public class MemberService {
     }
 
     // BMI 계산 및 업데이트
-    private void updateBMI(Member member) {
-        double heightInMeter = member.getMemberHeight() / 100;
-        double bmi = member.getMemberWeight() / (heightInMeter * heightInMeter);
-        member.setMemberBmi(Math.round(bmi * 100) / 100.0);  // 소수점 둘째자리까지
+    private void updateBMI(Member member , MemberDTO memberDTO) throws  Exception {
+        // Bmi 업데이트
+        if (memberDTO.getMemberBmi() != null) {
+            if (memberDTO.getMemberBmi() < 0) {
+                throw new Exception("골격근량은 0보다 작을 수 없습니다.");
+            }
+            member.setMemberBmi(memberDTO.getMemberBmi());
+        }
     }
 
     // 추가 신체 정보 업데이트

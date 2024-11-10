@@ -1,5 +1,13 @@
 package VitAI.injevital.dto;
 
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class MemberBodyInfoDTO {
     private double memberHeight;
     private double memberWeight;

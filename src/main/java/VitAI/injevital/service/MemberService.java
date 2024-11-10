@@ -101,8 +101,6 @@ public class MemberService {
         member.setMemberHeight(memberDTO.getMemberHeight());
         member.setMemberWeight(memberDTO.getMemberWeight());
 
-        // BMI 계산 및 업데이트
-        member.setMemberBmi(memberDTO.getMemberBmi());
 
         // 추가 신체 정보 업데이트
         updateAdditionalPhysicalInfo(member, memberDTO);
@@ -116,17 +114,6 @@ public class MemberService {
     private void validatePhysicalInfo(MemberDTO memberDTO) throws Exception {
         if (memberDTO.getMemberHeight() <= 0 || memberDTO.getMemberWeight() <= 0) {
             throw new Exception("키와 체중은 0보다 커야 합니다.");
-        }
-    }
-
-    // BMI 계산 및 업데이트
-    private void updateBMI(Member member , MemberDTO memberDTO) throws  Exception {
-        // Bmi 업데이트
-        if (memberDTO.getMemberBmi() != null) {
-            if (memberDTO.getMemberBmi() < 0) {
-                throw new Exception("골격근량은 0보다 작을 수 없습니다.");
-            }
-            member.setMemberBmi(memberDTO.getMemberBmi());
         }
     }
 
@@ -155,6 +142,14 @@ public class MemberService {
             }
             member.setMemberBfp(memberDTO.getMemberBfp());
         }
+        // Bmi 업데이트
+        if (memberDTO.getMemberBmi() != null) {
+            if (memberDTO.getMemberBmi() < 0) {
+                throw new Exception("골격근량은 0보다 작을 수 없습니다.");
+            }
+            member.setMemberBmi(memberDTO.getMemberBmi());
+        }
+
     }
     public MemberBodyInfoDTO getBodyInfo(String Id) {
         Optional<Member> member = memberRepository.findByMemberId(Id);

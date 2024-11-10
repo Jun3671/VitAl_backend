@@ -39,7 +39,7 @@ public class MemberController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping("/member/login")
     public ApiResponse login(@RequestBody LoginRequest loginRequest) {
         try {
             LoginResponse loginResponse = memberService.login(loginRequest);

@@ -9,6 +9,7 @@ import VitAI.injevital.repository.AuthorityRepository;
 import VitAI.injevital.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.slf4j.helpers.AbstractLogger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,6 +34,7 @@ public class MemberService {
     private final AuthorityRepository authorityRepository;
     private final ModelMapper modelMapper;
     private final TokenProvider tokenProvider;
+    private AbstractLogger log;
 
 
     public void save(MemberDTO memberDTO){
@@ -47,6 +49,8 @@ public class MemberService {
     }
 
     public LoginResponse login(LoginRequest memberDTO) throws LoginException {
+        log.info("로그인 서비스 시작");
+
         // memberId로 회원 찾기
         Optional<Member> byMemberId = memberRepository.findByMemberId(memberDTO.getMemberId());
 
@@ -56,16 +60,19 @@ public class MemberService {
         }
 
         Member member = byMemberId.get();
+        log.info("회원 조회 성공: {}", member.getMemberId());
 
         // PasswordEncoder를 사용하여 비밀번호 검증
         if (!passwordEncoder.matches(memberDTO.getMemberPassword(), member.getMemberPassword())) {
             throw new LoginException("비밀번호가 일치하지 않습니다.");
         }
+        log.info("비밀번호 검증 성공");
 
         // 권한 정보 생성
         List<GrantedAuthority> grantedAuthorities = member.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
                 .collect(Collectors.toList());
+        log.info("권한 정보 생성: {}", grantedAuthorities);
 
         // Authentication 객체 생성
         Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -76,6 +83,7 @@ public class MemberService {
 
         // JWT 토큰 생성
         String token = tokenProvider.createToken(authentication);
+        log.info("토큰 생성 성공");
 
         // 응답 데이터 생성
         LoginResponse loginResponse = new LoginResponse();

@@ -151,9 +151,10 @@ public class MemberService {
         }
 
     }
-    public MemberBodyInfoDTO getBodyInfo(String Id) {
-        Optional<Member> member = memberRepository.findByMemberId(Id);
-        return modelMapper.map(member, MemberBodyInfoDTO.class);
+    public MemberBodyInfoDTO getBodyInfo(String memberId) {
+        return memberRepository.findByMemberId(memberId)
+                .map(member -> modelMapper.map(member, MemberBodyInfoDTO.class))
+                .orElse(null);
     }
 
 }

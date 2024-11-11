@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     // 로그인시에 DB에서 유저정보와 권한정보를 가져와서 해당 정보를 기반으로 userdetails.User 객체를 생성해 리턴
-    public UserDetails loadUserByUsername(final String id) {
+    public UserDetails loadUserByUsername(String id) {
 
         return memberRepository.findByMemberId(id)
                 .map(user -> createUser(id, user))
@@ -39,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
                 .collect(Collectors.toList());
 
-        return new User(user.getMemberEmail(),
+        return new User(user.getMemberId(),
                 user.getMemberPassword(),
                 grantedAuthorities);
     }

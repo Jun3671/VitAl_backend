@@ -69,10 +69,22 @@ public class TokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
+        // claims에서 권한 정보를 가져오기 전에 null 체크
+        Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
+        if (authoritiesClaim == null) {
+            throw new IllegalArgumentException("No authorities information present in token");
+        }
+
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
+                Arrays.stream(authoritiesClaim.toString().split(","))
+                        .filter(auth -> !auth.trim().isEmpty())  // 빈 문자열 필터링
+                        .map(auth -> new SimpleGrantedAuthority(auth.trim()))  // 앞뒤 공백 제거
                         .collect(Collectors.toList());
+
+        // 권한이 비어있는지 확인
+        if (authorities.isEmpty()) {
+            throw new IllegalArgumentException("No valid authorities found in token");
+        }
 
         User principal = new User(claims.getSubject(), "", authorities);
 

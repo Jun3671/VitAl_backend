@@ -93,7 +93,7 @@ public class MemberController {
             @AuthenticationPrincipal UserDetails userDetails) {
         // 현재 로그인한 사용자의 정보 조회
         try {
-            MemberBodyInfoDTO bodyInfo = memberService.getBodyInfo(userDetails.getUsername());
+            MemberBodyInfoDTO bodyInfo = memberService.getBodyInfo(userDetails.getPassword());
 
             if (bodyInfo != null) {
                 // 정보가 성공적으로 조회된 경우 확인 메시지와 함께 반환

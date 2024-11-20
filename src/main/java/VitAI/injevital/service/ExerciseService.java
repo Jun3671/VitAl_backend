@@ -19,10 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.http.HttpHeaders;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

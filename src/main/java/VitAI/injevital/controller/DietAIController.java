@@ -2,10 +2,14 @@ package VitAI.injevital.controller;
 
 import VitAI.injevital.dto.*;
 import VitAI.injevital.entity.Member;
+import VitAI.injevital.jwt.TokenProvider;
 import VitAI.injevital.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -13,8 +17,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/bot")
 public class DietAIController {
+
+    private final TokenProvider tokenProvider;
+
     @Value("${openai.model}")
     private String model;
 
@@ -32,9 +40,23 @@ public class DietAIController {
 
     @PostMapping("/diet-recommendation")
     public ResponseEntity<DietRecommendationResponse> getDietRecommendation(
-            @RequestBody DietRecommendationRequest request) {
+            @RequestBody DietRecommendationRequest request,
+            @RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
-        Member member = memberRepository.findByMemberId(request.getMemberId())
+        String token = authHeader.substring(7); // "Bearer " 이후의 토큰 추출
+
+        // 토큰 유효성 검증
+        if (!tokenProvider.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // 토큰에서 memberId 추출
+        String memberId = tokenProvider.getMemberIdFromToken(token);
+
+        Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
         // BMI 및 일일 칼로리 계산

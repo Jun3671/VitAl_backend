@@ -1,5 +1,6 @@
 package VitAI.injevital.config;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class OpenAiConfig {
 
-    @Value("${OPENAI_API_KEY}")
+    @Value("${openai.api.key}")
     private String openAiKey;
 
     @Bean
@@ -37,5 +38,9 @@ public class OpenAiConfig {
 
         restTemplate.getInterceptors().add(interceptor);
         return restTemplate;
+    }
+    @PostConstruct
+    void init() {
+        log.debug("API Key length: {}", openAiKey != null ? openAiKey.length() : 0);
     }
 }

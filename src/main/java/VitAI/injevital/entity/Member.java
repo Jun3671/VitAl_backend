@@ -67,16 +67,22 @@ public class Member extends BaseEntity{ //table 역할
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
     private Set<Authority> authorities;
     public static Member toMemberEntity(MemberDTO memberDTO , PasswordEncoder passwordEncoder , Authority authority){
+        double bmi = calculateBmi(memberDTO.getMemberHeight(), memberDTO.getMemberWeight());
         return Member.builder()
                 .authorities(Collections.singleton(authority))
                 .memberId(memberDTO.getMemberId())
                 .memberWeight(memberDTO.getMemberWeight())
                 .memberHeight(memberDTO.getMemberHeight())
+                .memberBmi(bmi)
                 .memberPassword(passwordEncoder.encode(memberDTO.getMemberPassword()))
                 .memberGender(memberDTO.getMemberGender())
                 .memberName(memberDTO.getMemberName())
                 .memberEmail(memberDTO.getMemberEmail())
                 .activated(true)
                 .build();
+    }
+    private static double calculateBmi(double height, double weight) {
+        double heightInMeters = height / 100.0;
+        return Math.round((weight / (heightInMeters * heightInMeters)) * 10) / 10.0;
     }
 }

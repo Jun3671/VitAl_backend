@@ -20,7 +20,7 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ScheduleResponseDTO> createSchedule(@Valid @RequestBody ScheduleCreateDTO dto) {
         try {
             Schedule created = scheduleService.createSchedule(dto);
@@ -39,7 +39,7 @@ public class ScheduleController {
         }
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public ResponseEntity<ScheduleResponseDTO> updateSchedule(@Valid @RequestBody ScheduleUpdateDTO dto) {
         try {
             Schedule updated = scheduleService.updateSchedule(dto);
@@ -58,7 +58,7 @@ public class ScheduleController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     public ResponseEntity<ScheduleResponseDTO> deleteSchedule(@Valid @RequestBody ScheduleDeleteDTO dto) {
         try {
             scheduleService.deleteSchedule(dto);

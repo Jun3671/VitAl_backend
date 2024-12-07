@@ -6,9 +6,11 @@ import VitAI.injevital.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,24 +80,27 @@ public class ScheduleController {
     }
 
     @GetMapping("/monthly")
-    public ResponseEntity<ScheduleResponseDTO> getMonthlySchedules(@Valid @RequestBody MonthlyScheduleDTO dto) {
+    public ResponseEntity<ScheduleResponseDTO> getMonthlySchedules(
+            @RequestParam String memberId,
+            @RequestParam int year,
+            @RequestParam int month) {
         try {
             List<Schedule> schedules = scheduleService.getMonthlySchedules(
-                    dto.getMemberId(),
-                    dto.getYear(),
-                    dto.getMonth()
+                    memberId,
+                    year,
+                    month
             );
 
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
-                    dto.getYear() + "년 " + dto.getMonth() + "월의 일정을 조회했습니다",
+                    year + "년 " + month + "월의 일정을 조회했습니다",
                     schedules.stream()
                             .map(ScheduleDTO::from)
                             .collect(Collectors.toList())
             ));
         } catch (Exception e) {
             log.error("월간 일정 조회 중 오류 발생. memberId: {}, year: {}, month: {}",
-                    dto.getMemberId(), dto.getYear(), dto.getMonth(), e);
+                    memberId, year, month, e);
             return ResponseEntity.badRequest().body(ScheduleResponseDTO.of(
                     false,
                     "월간 일정 조회 실패: " + e.getMessage(),
@@ -105,23 +110,25 @@ public class ScheduleController {
     }
 
     @GetMapping("/daily")
-    public ResponseEntity<ScheduleResponseDTO> getDailySchedules(@Valid @RequestBody DailyScheduleDTO dto) {
+    public ResponseEntity<ScheduleResponseDTO> getDailySchedules(
+            @RequestParam String memberId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime date) {
         try {
             List<Schedule> schedules = scheduleService.getDailySchedules(
-                    dto.getMemberId(),
-                    dto.getDate().toLocalDate()
+                    memberId,
+                    date.toLocalDate()
             );
 
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
-                    dto.getDate().toLocalDate() + " 일자의 일정을 조회했습니다",
+                    date.toLocalDate() + " 일자의 일정을 조회했습니다",
                     schedules.stream()
                             .map(ScheduleDTO::from)
                             .collect(Collectors.toList())
             ));
         } catch (Exception e) {
             log.error("일간 일정 조회 중 오류 발생. memberId: {}, date: {}",
-                    dto.getMemberId(), dto.getDate(), e);
+                    memberId, date, e);
             return ResponseEntity.badRequest().body(ScheduleResponseDTO.of(
                     false,
                     "일간 일정 조회 실패: " + e.getMessage(),

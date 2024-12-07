@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,23 +113,28 @@ public class ScheduleController {
     @GetMapping("/daily")
     public ResponseEntity<ScheduleResponseDTO> getDailySchedules(
             @RequestParam String memberId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime date) {
+            @RequestParam int year,
+            @RequestParam int month,
+            @RequestParam int day) {
         try {
+            // 년, 월, 일로 LocalDate 생성
+            LocalDate date = LocalDate.of(year, month, day);
+
             List<Schedule> schedules = scheduleService.getDailySchedules(
                     memberId,
-                    date.toLocalDate()
+                    date
             );
 
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
-                    date.toLocalDate() + " 일자의 일정을 조회했습니다",
+                    date + " 일자의 일정을 조회했습니다",
                     schedules.stream()
                             .map(ScheduleDTO::from)
                             .collect(Collectors.toList())
             ));
         } catch (Exception e) {
-            log.error("일간 일정 조회 중 오류 발생. memberId: {}, date: {}",
-                    memberId, date, e);
+            log.error("일간 일정 조회 중 오류 발생. memberId: {}, date: {}-{}-{}",
+                    memberId, year, month, day, e);
             return ResponseEntity.badRequest().body(ScheduleResponseDTO.of(
                     false,
                     "일간 일정 조회 실패: " + e.getMessage(),

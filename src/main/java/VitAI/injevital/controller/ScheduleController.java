@@ -25,28 +25,18 @@ public class ScheduleController {
 
     final private ScheduleService scheduleService;
 
+
     @PostMapping("/create")
-    public ResponseEntity<ScheduleResponseDTO> createSchedule(
-            @RequestParam Long scheduleId,
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam String memberId) {
+    public ResponseEntity<ScheduleResponseDTO> createSchedule(@Valid @RequestBody ScheduleCreateDTO dto) {
         try {
-            Schedule created = scheduleService.createSchedule(
-                    ScheduleCreateDTO.builder()
-                            .scheduleId(scheduleId)
-                            .title(title)
-                            .content(content)
-                            .memberId(memberId)
-                            .build()
-            );
+            Schedule created = scheduleService.createSchedule(dto);
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
                     "일정이 생성되었습니다",
                     List.of(ScheduleDTO.from(created))
             ));
         } catch (Exception e) {
-            log.error("일정 생성 중 오류 발생. memberId: {}", memberId, e);
+            log.error("일정 생성 중 오류 발생", e);
             return ResponseEntity.badRequest().body(ScheduleResponseDTO.of(
                     false,
                     e.getMessage(),
@@ -56,29 +46,16 @@ public class ScheduleController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ScheduleResponseDTO> updateSchedule(
-            @RequestParam Long scheduleId,
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam String memberId,
-            @RequestParam LocalDateTime startTime,
-            @RequestParam LocalDateTime endTime) {
+    public ResponseEntity<ScheduleResponseDTO> updateSchedule(@Valid @RequestBody ScheduleUpdateDTO dto) {
         try {
-            Schedule updated = scheduleService.updateSchedule(
-                    ScheduleUpdateDTO.builder()
-                            .scheduleId(scheduleId)
-                            .title(title)
-                            .content(content)
-                            .memberId(memberId)
-                            .build()
-            );
+            Schedule updated = scheduleService.updateSchedule(dto);
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
                     "일정이 수정되었습니다",
                     List.of(ScheduleDTO.from(updated))
             ));
         } catch (Exception e) {
-            log.error("일정 수정 중 오류 발생. scheduleId: {}, memberId: {}", scheduleId, memberId, e);
+            log.error("일정 수정 중 오류 발생", e);
             return ResponseEntity.badRequest().body(ScheduleResponseDTO.of(
                     false,
                     e.getMessage(),
@@ -88,23 +65,16 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ScheduleResponseDTO> deleteSchedule(
-            @RequestParam Long scheduleId,
-            @RequestParam String memberId) {
+    public ResponseEntity<ScheduleResponseDTO> deleteSchedule(@Valid @RequestBody ScheduleDeleteDTO dto) {
         try {
-            scheduleService.deleteSchedule(
-                    ScheduleDeleteDTO.builder()
-                            .scheduleId(scheduleId)
-                            .memberId(memberId)
-                            .build()
-            );
+            scheduleService.deleteSchedule(dto);
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
                     "일정이 삭제되었습니다",
                     null
             ));
         } catch (Exception e) {
-            log.error("일정 삭제 중 오류 발생. scheduleId: {}, memberId: {}", scheduleId, memberId, e);
+            log.error("일정 삭제 중 오류 발생", e);
             return ResponseEntity.badRequest().body(ScheduleResponseDTO.of(
                     false,
                     e.getMessage(),
@@ -112,6 +82,7 @@ public class ScheduleController {
             ));
         }
     }
+
     @GetMapping("/monthly")
     public ResponseEntity<ScheduleResponseDTO> getMonthlySchedules(
             @RequestParam String memberId,

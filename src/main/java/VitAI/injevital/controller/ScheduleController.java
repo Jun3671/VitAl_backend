@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,10 +21,21 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @PostMapping
-    public ResponseEntity<ScheduleResponseDTO> createSchedule(@Valid @RequestBody ScheduleCreateDTO dto) {
+    @PostMapping("/create")
+    public ResponseEntity<ScheduleResponseDTO> createSchedule(
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String memberId,
+            @RequestParam LocalDate scheduleDate) {
         try {
-            Schedule created = scheduleService.createSchedule(dto);
+            Schedule created = scheduleService.createSchedule(
+                    ScheduleCreateDTO.builder()
+                            .title(title)
+                            .content(content)
+                            .memberId(memberId)
+                            .scheduleDate(scheduleDate.atStartOfDay())
+                            .build()
+            );
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
                     "일정이 생성되었습니다",
@@ -39,10 +51,23 @@ public class ScheduleController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<ScheduleResponseDTO> updateSchedule(@Valid @RequestBody ScheduleUpdateDTO dto) {
+    @PutMapping("/update")
+    public ResponseEntity<ScheduleResponseDTO> updateSchedule(
+            @RequestParam Long scheduleId,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String memberId,
+            @RequestParam LocalDate scheduleDate) {
         try {
-            Schedule updated = scheduleService.updateSchedule(dto);
+            Schedule updated = scheduleService.updateSchedule(
+                    ScheduleUpdateDTO.builder()
+                            .scheduleId(scheduleId)
+                            .title(title)
+                            .content(content)
+                            .memberId(memberId)
+                            .scheduleDate(scheduleDate.atStartOfDay())
+                            .build()
+            );
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
                     "일정이 수정되었습니다",
@@ -57,18 +82,24 @@ public class ScheduleController {
             ));
         }
     }
-
-    @DeleteMapping
-    public ResponseEntity<ScheduleResponseDTO> deleteSchedule(@Valid @RequestBody ScheduleDeleteDTO dto) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<ScheduleResponseDTO> deleteSchedule(
+            @RequestParam Long scheduleId,
+            @RequestParam String memberId) {
         try {
-            scheduleService.deleteSchedule(dto);
+            scheduleService.deleteSchedule(
+                    ScheduleDeleteDTO.builder()
+                            .scheduleId(scheduleId)
+                            .memberId(memberId)
+                            .build()
+            );
             return ResponseEntity.ok(ScheduleResponseDTO.of(
                     true,
                     "일정이 삭제되었습니다",
                     null
             ));
         } catch (Exception e) {
-            log.error("일정 삭제 중 오류 발생", e);
+            log.error("일정 삭제 중 오류 발생. scheduleId: {}, memberId: {}", scheduleId, memberId, e);
             return ResponseEntity.badRequest().body(ScheduleResponseDTO.of(
                     false,
                     e.getMessage(),

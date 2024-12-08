@@ -4,16 +4,13 @@ import VitAI.injevital.dto.*;
 import VitAI.injevital.entity.Schedule;
 import VitAI.injevital.service.ScheduleService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 @RestController

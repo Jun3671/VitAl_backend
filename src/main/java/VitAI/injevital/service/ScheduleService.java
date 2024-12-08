@@ -8,6 +8,7 @@ import VitAI.injevital.entity.Schedule;
 import VitAI.injevital.repository.MemberRepository;
 import VitAI.injevital.repository.ScheduleRepository;
 import jakarta.transaction.Transactional;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
+@Builder
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;

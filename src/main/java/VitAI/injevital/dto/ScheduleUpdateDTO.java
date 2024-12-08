@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScheduleUpdateDTO {
+    @NotNull
+    private Long scheduleId;
+
     @NotNull(message = "회원 ID는 필수입니다")
     private String memberId;
 

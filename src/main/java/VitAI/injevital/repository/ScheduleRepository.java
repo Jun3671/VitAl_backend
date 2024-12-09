@@ -6,6 +6,7 @@ import VitAI.injevital.entity.ScheduleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     // 특정 회원의 특정 날짜 일정 찾기
     Optional<Schedule> findByMemberMemberIdAndScheduleDate(String memberId, LocalDateTime scheduleDate);
 
-    List<Schedule> findByMemberAndType(Member member, ScheduleType type);
-
     List<Schedule> findByMemberOrderByScheduleDateDesc(Member member);
+
+    Optional<Schedule> findByMemberMemberIdAndScheduleDateAndContent(
+            String memberId,
+            LocalDate scheduleDate,
+            String content
+    );
+
 }

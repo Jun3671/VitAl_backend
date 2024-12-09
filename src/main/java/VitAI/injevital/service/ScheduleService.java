@@ -63,22 +63,24 @@ public class ScheduleService {
 
     public void deleteSchedule(ScheduleDeleteDTO dto) {
         try {
-            Schedule schedule = scheduleRepository.findById(dto.getScheduleId())
-                    .orElseThrow(() -> new RuntimeException("해당 일정을 찾을 수 없습니다."));
+            Schedule schedule = scheduleRepository.findByMemberMemberIdAndScheduleDateAndContent(
+                    dto.getMemberId(),
+                    dto.getScheduleDate(),
+                    dto.getContent()
+            ).orElseThrow(() -> new RuntimeException("해당 일정을 찾을 수 없습니다."));
 
-            // 권한 체크: 해당 memberId의 일정인지 확인
+            // 권한 체크
             if (!schedule.getMember().getMemberId().equals(dto.getMemberId())) {
                 throw new RuntimeException("일정 삭제 권한이 없습니다.");
             }
 
             scheduleRepository.delete(schedule);
         } catch (Exception e) {
-            log.error("일정 삭제 중 오류 발생. scheduleId: {}, memberId: {}",
-                    dto.getScheduleId(), dto.getMemberId(), e);
+            log.error("일정 삭제 중 오류 발생. memberId: {}, date: {}, content: {}",
+                    dto.getMemberId(), dto.getScheduleDate(), dto.getContent(), e);
             throw new RuntimeException("일정 삭제에 실패했습니다: " + e.getMessage());
         }
     }
-
     public List<Schedule> getMonthlySchedules(String memberId, int year, int month) {
         try {
             // 회원 존재 여부 확인

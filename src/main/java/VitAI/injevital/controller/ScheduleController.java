@@ -84,13 +84,15 @@ public class ScheduleController {
     }
     @DeleteMapping("/delete")
     public ResponseEntity<ScheduleResponseDTO> deleteSchedule(
-            @RequestParam Long scheduleId,
-            @RequestParam String memberId) {
+            @RequestParam String memberId,
+            @RequestParam LocalDate scheduleDate,
+            @RequestParam String content) {
         try {
             scheduleService.deleteSchedule(
                     ScheduleDeleteDTO.builder()
-                            .scheduleId(scheduleId)
                             .memberId(memberId)
+                            .scheduleDate(scheduleDate)
+                            .content(content)
                             .build()
             );
             return ResponseEntity.ok(ScheduleResponseDTO.of(
@@ -99,7 +101,8 @@ public class ScheduleController {
                     null
             ));
         } catch (Exception e) {
-            log.error("일정 삭제 중 오류 발생. scheduleId: {}, memberId: {}", scheduleId, memberId, e);
+            log.error("일정 삭제 중 오류 발생. memberId: {}, date: {}, content: {}",
+                    memberId, scheduleDate, content, e);
             return ResponseEntity.badRequest().body(ScheduleResponseDTO.of(
                     false,
                     e.getMessage(),

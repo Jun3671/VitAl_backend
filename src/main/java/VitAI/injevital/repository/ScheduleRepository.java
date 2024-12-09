@@ -32,7 +32,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     Optional<Schedule> findByMemberMemberIdAndScheduleDateAndContent(
             String memberId,
-            LocalDate scheduleDate,
+            LocalDateTime scheduleDate,
             String content
     );
 

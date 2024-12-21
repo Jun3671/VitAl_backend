@@ -19,6 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -532,5 +533,20 @@ public class ExerciseService {
         if (request.getTargetPart() == null || request.getExerciseCount() <= 0 || request.getExerciseCount() > 10) {
             throw new InvalidExerciseRequestException("잘못된 요청입니다.");
         }
+    }
+
+    @Transactional
+    public void normalizeYoutubeUrls() {
+        List<Exercise> exercises = exerciseRepository.findAll();
+        for (Exercise exercise : exercises) {
+            try {
+                if (exercise.getYoutubeUrl() != null) {
+                    exercise.setYoutubeUrl(exercise.getYoutubeUrl()); // 새로운 setter 로직 사용
+                }
+            } catch (Exception e) {
+                log.error("Exercise ID {} YouTube URL 정규화 실패: {}", exercise.getId(), e.getMessage());
+            }
+        }
+        exerciseRepository.saveAll(exercises);
     }
 }

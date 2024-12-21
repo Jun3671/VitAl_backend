@@ -63,12 +63,13 @@ public class ScheduleService {
 
     public void deleteSchedule(ScheduleDeleteDTO dto) {
         try {
-            // LocalDate를 LocalDateTime으로 변환
             LocalDateTime scheduleDateTime = dto.getScheduleDate().atStartOfDay();
 
-            Schedule schedule = scheduleRepository.findByMemberMemberIdAndScheduleDate(
+            // content도 함께 조회 조건에 포함
+            Schedule schedule = scheduleRepository.findByMemberMemberIdAndScheduleDateAndContent(
                     dto.getMemberId(),
-                    scheduleDateTime
+                    scheduleDateTime,
+                    dto.getContent()  // DTO에 content 필드 추가 필요
             ).orElseThrow(() -> new RuntimeException("해당 일정을 찾을 수 없습니다."));
 
             // 권한 체크
@@ -78,8 +79,8 @@ public class ScheduleService {
 
             scheduleRepository.delete(schedule);
         } catch (Exception e) {
-            log.error("일정 삭제 중 오류 발생. memberId: {}, date: {}",
-                    dto.getMemberId(), dto.getScheduleDate(), e);
+            log.error("일정 삭제 중 오류 발생. memberId: {}, date: {}, content: {}",
+                    dto.getMemberId(), dto.getScheduleDate(), dto.getContent(), e);
             throw new RuntimeException("일정 삭제에 실패했습니다: " + e.getMessage());
         }
     }

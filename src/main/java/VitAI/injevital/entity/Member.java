@@ -81,7 +81,7 @@ public class Member extends BaseEntity{ //table 역할
                 .activated(true)
                 .build();
     }
-    private static double calculateBmi(double height, double weight) {
+    public static double calculateBmi(double height, double weight) {
         double heightInMeters = height / 100.0;
         return Math.round((weight / (heightInMeters * heightInMeters)) * 10) / 10.0;
     }

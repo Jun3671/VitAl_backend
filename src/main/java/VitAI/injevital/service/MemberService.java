@@ -95,12 +95,14 @@ public class MemberService {
                 .orElseThrow(() -> new Exception("회원 정보를 찾을 수 없습니다."));
 
         // 신체 정보 유효성 검사
-        validatePhysicalInfo(memberDTO);
 
         // 기본 신체 정보 업데이트
         member.setMemberHeight(memberDTO.getMemberHeight());
         member.setMemberWeight(memberDTO.getMemberWeight());
 
+        // BMI 계산 및 업데이트 - Member 엔티티의 calculateBmi 메소드 활용
+        double updatedBmi = Member.calculateBmi(memberDTO.getMemberHeight(), memberDTO.getMemberWeight());
+        member.setMemberBmi(updatedBmi);
 
         // 추가 신체 정보 업데이트
         updateAdditionalPhysicalInfo(member, memberDTO);
@@ -108,13 +110,6 @@ public class MemberService {
         // 변경된 정보 저장
         Member updatedMember = memberRepository.save(member);
         return MemberDTO.toMemberDTO(updatedMember);
-    }
-
-    // 신체 정보 유효성 검사
-    private void validatePhysicalInfo(MemberDTO memberDTO) throws Exception {
-        if (memberDTO.getMemberHeight() <= 0 || memberDTO.getMemberWeight() <= 0) {
-            throw new Exception("키와 체중은 0보다 커야 합니다.");
-        }
     }
 
     // 추가 신체 정보 업데이트

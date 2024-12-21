@@ -138,13 +138,7 @@ public class MemberService {
             }
             member.setMemberBfp(memberDTO.getMemberBfp());
         }
-        // Bmi 업데이트
-        if (memberDTO.getMemberBmi() != null) {
-            if (memberDTO.getMemberBmi() < 0) {
-                throw new Exception("골격근량은 0보다 작을 수 없습니다.");
-            }
-            member.setMemberBmi(memberDTO.getMemberBmi());
-        }
+
 
     }
     public MemberBodyInfoDTO getBodyInfo(String memberId) {

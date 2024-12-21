@@ -94,15 +94,16 @@ public class MemberService {
         Member member = memberRepository.findByMemberId(currentUsername)
                 .orElseThrow(() -> new Exception("회원 정보를 찾을 수 없습니다."));
 
-        // 신체 정보 유효성 검사
-
         // 기본 신체 정보 업데이트
         member.setMemberHeight(memberDTO.getMemberHeight());
         member.setMemberWeight(memberDTO.getMemberWeight());
 
-        // BMI 계산 및 업데이트 - Member 엔티티의 calculateBmi 메소드 활용
-        double updatedBmi = Member.calculateBmi(memberDTO.getMemberHeight(), memberDTO.getMemberWeight());
-        member.setMemberBmi(updatedBmi);
+        // BMI 계산 및 업데이트 (BMI = 체중(kg) / (신장(m) * 신장(m)))
+        double heightInMeters = memberDTO.getMemberHeight() / 100.0; // cm를 m로 변환
+        double bmi = memberDTO.getMemberWeight() / (heightInMeters * heightInMeters);
+        // 소수점 첫째자리까지 반올림
+        bmi = Math.round(bmi * 10) / 10.0;
+        member.setMemberBmi(bmi);
 
         // 추가 신체 정보 업데이트
         updateAdditionalPhysicalInfo(member, memberDTO);

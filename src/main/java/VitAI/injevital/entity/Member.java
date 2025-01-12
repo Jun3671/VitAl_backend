@@ -23,7 +23,6 @@ public class Member extends BaseEntity{ //table 역할
     @GeneratedValue(strategy = GenerationType.IDENTITY) //
     private Long id;
 
-
     @Column(unique = true)
     private String memberEmail;
 

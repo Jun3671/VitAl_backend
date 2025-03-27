@@ -1,5 +1,5 @@
-# VitAl_backend
-VitAl (캡스톤 디자인 I 프로젝트) 🏋️‍♂️🤖
+# VitAl_backend (캡스톤 디자인 I 프로젝트) 🏋️‍♂️🤖
+
 <div align="center">
   <img src="src/screenshots/app_logo.png" width="200"/>
   <p><i>AI 기반 개인 맞춤형 건강 관리 솔루션</i></p>

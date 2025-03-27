@@ -1,7 +1,7 @@
 # VitAl_backend
 헬스메이트(HealthMate) 🏋️‍♂️🤖
 <div align="center">
-  <img src="screenshots/app_logo.png" alt="헬스메이트 로고" width="200"/>
+  <img src="app_logo.png" width="200"/>
   <p><i>AI 기반 개인 맞춤형 건강 관리 솔루션</i></p>
 </div>
 📱 프로젝트 소개

@@ -1,25 +1,29 @@
 package VitAI.injevital.service;
+import VitAI.injevital.entity.EmailAuthCode;
+import VitAI.injevital.repository.EmailAuthCodeRepository;
 import VitAI.injevital.repository.MemberRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class EmailService {
 
     private final MemberRepository memberRepository;
-
-
     private final JavaMailSender emailSender;
-    private Map<String, String> authCodes = new HashMap<>();
+    private final EmailAuthCodeRepository emailAuthCodeRepository;
+
+    private static final int AUTH_CODE_EXPIRATION_MINUTES = 5;
     private String authNum; // 인증 번호
 
     // 인증번호 8자리 무작위 생성
@@ -81,21 +85,42 @@ public class EmailService {
     public String sendEmail(String email) throws MessagingException, UnsupportedEncodingException {
         MimeMessage emailForm = createEmailForm(email);
         emailSender.send(emailForm);
-        authCodes.put(email, authNum);
+
+        // 기존 인증코드가 있으면 삭제
+        emailAuthCodeRepository.findByEmail(email)
+                .ifPresent(emailAuthCodeRepository::delete);
+
+        // 새로운 인증코드 저장
+        EmailAuthCode emailAuthCode = EmailAuthCode.builder()
+                .email(email)
+                .authCode(authNum)
+                .expiresAt(LocalDateTime.now().plusMinutes(AUTH_CODE_EXPIRATION_MINUTES))
+                .build();
+        emailAuthCodeRepository.save(emailAuthCode);
+
         return authNum;
     }
 
     public boolean verifyAuthCode(String email, String code) {
-        String storedCode = authCodes.get(email);
-        if (storedCode != null && storedCode.equals(code)) {
-            authCodes.remove(email);
-            return true;
-        }
-        return false;
+        return emailAuthCodeRepository.findByEmail(email)
+                .map(emailAuthCode -> {
+                    if (emailAuthCode.isCodeValid(code)) {
+                        emailAuthCodeRepository.delete(emailAuthCode);
+                        return true;
+                    }
+                    return false;
+                })
+                .orElse(false);
     }
 
     public boolean isIdExist(String id) {
         return memberRepository.existsByMemberId(id);
+    }
+
+    // 매 시간마다 만료된 인증코드 삭제
+    @Scheduled(cron = "0 0 * * * *")
+    public void deleteExpiredAuthCodes() {
+        emailAuthCodeRepository.deleteByExpiresAtBefore(LocalDateTime.now());
     }
 
 }

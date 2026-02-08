@@ -5,6 +5,7 @@ import VitAI.injevital.entity.Authority;
 import VitAI.injevital.entity.Member;
 import VitAI.injevital.jwt.SecurityUtil;
 import VitAI.injevital.jwt.TokenProvider;
+import VitAI.injevital.mapper.MemberMapper;
 import VitAI.injevital.repository.AuthorityRepository;
 import VitAI.injevital.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,8 @@ public class MemberService {
     private final ModelMapper modelMapper;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    
+    private final MemberMapper memberMapper;
+
     private AbstractLogger log;
 
 
@@ -47,7 +49,7 @@ public class MemberService {
         authorityRepository.save(authority);
 
         //repository save 메서드 호출
-        Member memberEntity = Member.toMemberEntity(memberDTO , passwordEncoder , authority );
+        Member memberEntity = memberMapper.toEntity(memberDTO, passwordEncoder, authority);
         memberRepository.save(memberEntity);
     }
 
@@ -70,7 +72,7 @@ public class MemberService {
 
             // 응답 데이터 생성
             LoginResponse loginResponse = new LoginResponse();
-            loginResponse.setMemberInfo(MemberDTO.toMemberDTO(member));
+            loginResponse.setMemberInfo(memberMapper.toDto(member));
             loginResponse.setTokenDto(new TokenDto(jwt));
 
             return loginResponse;
@@ -98,11 +100,8 @@ public class MemberService {
         member.setMemberHeight(memberDTO.getMemberHeight());
         member.setMemberWeight(memberDTO.getMemberWeight());
 
-        // BMI 계산 및 업데이트 (BMI = 체중(kg) / (신장(m) * 신장(m)))
-        double heightInMeters = memberDTO.getMemberHeight() / 100.0; // cm를 m로 변환
-        double bmi = memberDTO.getMemberWeight() / (heightInMeters * heightInMeters);
-        // 소수점 첫째자리까지 반올림
-        bmi = Math.round(bmi * 10) / 10.0;
+        // BMI 계산 및 업데이트
+        double bmi = memberMapper.calculateBmi(memberDTO.getMemberHeight(), memberDTO.getMemberWeight());
         member.setMemberBmi(bmi);
 
         // 추가 신체 정보 업데이트
@@ -110,7 +109,7 @@ public class MemberService {
 
         // 변경된 정보 저장
         Member updatedMember = memberRepository.save(member);
-        return MemberDTO.toMemberDTO(updatedMember);
+        return memberMapper.toDto(updatedMember);
     }
 
     // 추가 신체 정보 업데이트

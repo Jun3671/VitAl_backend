@@ -5,11 +5,13 @@ import VitAI.injevital.entity.Authority;
 import VitAI.injevital.entity.Member;
 import VitAI.injevital.jwt.SecurityUtil;
 import VitAI.injevital.jwt.TokenProvider;
+import VitAI.injevital.mapper.MemberMapper;
 import VitAI.injevital.repository.AuthorityRepository;
 import VitAI.injevital.repository.MemberRepository;
+import VitAI.injevital.util.CalculationUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.slf4j.helpers.AbstractLogger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -36,8 +38,7 @@ public class MemberService {
     private final ModelMapper modelMapper;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    
-    private AbstractLogger log;
+    private final MemberMapper memberMapper;
 
 
     public void save(MemberDTO memberDTO){
@@ -98,11 +99,8 @@ public class MemberService {
         member.setMemberHeight(memberDTO.getMemberHeight());
         member.setMemberWeight(memberDTO.getMemberWeight());
 
-        // BMI 계산 및 업데이트 (BMI = 체중(kg) / (신장(m) * 신장(m)))
-        double heightInMeters = memberDTO.getMemberHeight() / 100.0; // cm를 m로 변환
-        double bmi = memberDTO.getMemberWeight() / (heightInMeters * heightInMeters);
-        // 소수점 첫째자리까지 반올림
-        bmi = Math.round(bmi * 10) / 10.0;
+        // BMI 계산 및 업데이트
+        double bmi = CalculationUtils.calculateBmi(memberDTO.getMemberHeight(), memberDTO.getMemberWeight());
         member.setMemberBmi(bmi);
 
         // 추가 신체 정보 업데이트

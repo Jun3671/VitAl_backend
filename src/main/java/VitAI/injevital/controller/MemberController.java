@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -89,28 +88,16 @@ public class MemberController {
     }
 
     @GetMapping("/member/body-info")
-    public ResponseEntity<?> getMemberBodyInfo(
+    public ResponseEntity<ApiResponse> getMemberBodyInfo(
             @AuthenticationPrincipal UserDetails userDetails) {
-        // 현재 로그인한 사용자의 정보 조회
-        try {
-            MemberBodyInfoDTO bodyInfo = memberService.getBodyInfo(userDetails.getUsername());
+        MemberBodyInfoDTO bodyInfo = memberService.getBodyInfo(userDetails.getUsername());
 
-            if (bodyInfo != null) {
-                // 정보가 성공적으로 조회된 경우 확인 메시지와 함께 반환
-                return ResponseEntity.ok()
-                        .body(Map.of(
-                                "message", "회원 정보가 성공적으로 조회되었습니다.",
-                                "data", bodyInfo
-                        ));
-            } else {
-                // 정보가 없는 경우 오류 메시지 반환
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "회원 정보를 찾을 수 없습니다."));
-            }
-        } catch (Exception e) {
-            // 예외 발생 시 오류 메시지 반환
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "회원 정보를 조회하는 중에 오류가 발생했습니다."));
+        if (bodyInfo != null) {
+            return ResponseEntity.ok(ApiResponse.success(bodyInfo));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("회원 정보를 찾을 수 없습니다."));
         }
     }
 

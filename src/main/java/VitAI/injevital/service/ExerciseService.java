@@ -39,11 +39,17 @@ public class ExerciseService {
     private final MemberRepository memberRepository;
     private final RestTemplate restTemplate;
 
-    @Value("${openai.model}")
+    @Value("${gemini.model}")
     private String model;
 
-    @Value("${openai.api.url}")
+    @Value("${gemini.api.url}")
     private String apiURL;
+
+    @Value("${gemini.temperature}")
+    private double temperature;
+
+    @Value("${gemini.max-tokens}")
+    private int maxTokens;
 
     public ExerciseRecommendationResponse getExerciseRecommendations(ExerciseRecommendationRequest request) {
         try {
@@ -66,9 +72,9 @@ public class ExerciseService {
             }
 
             // 4. AI에 프롬프트 전송하여 운동 추천 받기
-            ChatGPTRequest chatGPTRequest = createChatGPTRequest(member, request, availableExercises);
+            GeminiRequest geminiRequest = createGeminiRequest(member, request, availableExercises);
             // 여기서 targetPart와 member도 함께 전달
-            ChatGPTResponse aiResponse = getAIRecommendations(chatGPTRequest, request.getTargetPart(), member);
+            GeminiResponse aiResponse = getAIRecommendations(geminiRequest, request.getTargetPart(), member);
 
             // 5. AI 응답 파싱 및 응답 생성
             return parseAIResponseAndCreateRecommendation(aiResponse, member, availableExercises);
@@ -79,7 +85,7 @@ public class ExerciseService {
         }
     }
 
-    private ChatGPTRequest createChatGPTRequest(Member member, ExerciseRecommendationRequest request, List<Exercise> exercises) {
+    private GeminiRequest createGeminiRequest(Member member, ExerciseRecommendationRequest request, List<Exercise> exercises) {
         String prompt = String.format("""
     다음 사용자의 신체 정보와 운동 목표를 분석하여 완전히 개인화된 맞춤형 운동 프로그램을 추천해주세요.
     
@@ -170,54 +176,25 @@ public class ExerciseService {
                 request.getExerciseCount()
         );
 
-        return new ChatGPTRequest(model, prompt);
+        return new GeminiRequest(prompt, temperature, maxTokens);
     }
 
-    private ChatGPTResponse getAIRecommendations(ChatGPTRequest request, String targetPart, Member member) {
+    private GeminiResponse getAIRecommendations(GeminiRequest request, String targetPart, Member member) {
         try {
-            // Create headers
-            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+            log.info("Gemini API 요청 URL: {}", apiURL);
+            log.debug("Gemini API 요청 내용: {}", request);
 
-            // Create request body
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "gpt-3.5-turbo");
-            requestBody.put("temperature", 0.7);
-            requestBody.put("max_tokens", 2000);
+            // Gemini API 호출
+            GeminiResponse response = restTemplate.postForObject(apiURL, request, GeminiResponse.class);
 
-            // Format messages
-            List<Map<String, String>> messages = new ArrayList<>();
-            Map<String, String> systemMessage = new HashMap<>();
-            systemMessage.put("role", "system");
-            systemMessage.put("content", "You are a professional fitness trainer providing exercise recommendations.");
-            messages.add(systemMessage);
-
-            Map<String, String> userMessage = new HashMap<>();
-            userMessage.put("role", "user");
-            userMessage.put("content", request.getMessages().get(0).getContent());
-            messages.add(userMessage);
-
-            requestBody.put("messages", messages);
-
-            // Log request
-            ObjectMapper mapper = new ObjectMapper();
-            log.info("API 요청 URL: {}", apiURL);
-            log.info("API 요청 본문: {}", mapper.writeValueAsString(requestBody));
-
-            // Make request
-            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
-            ResponseEntity<String> response = restTemplate.exchange(
-                    apiURL,
-                    HttpMethod.POST,
-                    requestEntity,
-                    String.class
-            );
-
-            // Log response
-            log.info("API 응답: {}", response.getBody());
-
-            // Parse response
-            return mapper.readValue(response.getBody(), ChatGPTResponse.class);
+            if (response != null && response.getTextContent() != null) {
+                log.info("Gemini API 응답 수신 성공");
+                return response;
+            } else {
+                log.warn("Gemini API 응답이 비어있습니다. Fallback 사용");
+                UserStats userStats = buildUserStats(member);
+                return fallbackRecommendation(targetPart, userStats);
+            }
 
         } catch (Exception e) {
             log.error("AI 서비스 호출 중 오류 발생: {}", e.getMessage());
@@ -226,7 +203,7 @@ public class ExerciseService {
         }
     }
 
-    private ChatGPTResponse fallbackRecommendation(String targetPart, UserStats userStats) {
+    private GeminiResponse fallbackRecommendation(String targetPart, UserStats userStats) {
         // 운동 부위별 기본 추천 운동 매핑
         Map<String, List<ExerciseTemplate>> exercisesByPart = Map.of(
                 "어깨", List.of(
@@ -288,14 +265,15 @@ public class ExerciseService {
         }
         """);
 
-        // ChatGPTResponse 생성 및 반환
-        ChatGPTResponse response = new ChatGPTResponse();
-        ChatGPTResponse.Choice choice = new ChatGPTResponse.Choice();
-        ChatGPTResponse.Message message = new ChatGPTResponse.Message();
-        message.setRole("assistant");
-        message.setContent(jsonContent.toString());
-        choice.setMessage(message);
-        response.setChoices(List.of(choice));
+        // GeminiResponse 생성 및 반환
+        GeminiResponse response = new GeminiResponse();
+        GeminiResponse.Candidate candidate = new GeminiResponse.Candidate();
+        GeminiContent content = new GeminiContent();
+        content.setRole("model");
+        content.setParts(List.of(new GeminiPart(jsonContent.toString())));
+        candidate.setContent(content);
+        candidate.setFinishReason("STOP");
+        response.setCandidates(List.of(candidate));
 
         return response;
     }
@@ -312,12 +290,12 @@ public class ExerciseService {
     }
 
     private ExerciseRecommendationResponse parseAIResponseAndCreateRecommendation(
-            ChatGPTResponse aiResponse,
+            GeminiResponse aiResponse,
             Member member,
             List<Exercise> availableExercises) {
 
         try {
-            String jsonResponse = aiResponse.getChoices().get(0).getMessage().getContent();
+            String jsonResponse = aiResponse.getTextContent();
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(jsonResponse);
 

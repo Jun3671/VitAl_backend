@@ -6,6 +6,7 @@ import VitAI.injevital.jwt.TokenProvider;
 import VitAI.injevital.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/bot")
@@ -23,11 +25,14 @@ public class DietAIController {
 
     private final TokenProvider tokenProvider;
 
-    @Value("${openai.model}")
+    @Value("${gemini.model}")
     private String model;
 
-    @Value("${openai.api.url}")
+    @Value("${gemini.api.url}")
     private String apiURL;
+
+    @Value("${app.defaults.age}")
+    private int defaultAge;
 
     @Autowired
     private RestTemplate template;
@@ -103,17 +108,17 @@ public class DietAIController {
                 height, weight, bmi, dailyCalories, request.getGoal(), request.getFoodType()
         );
 
-        ChatGPTRequest gptRequest = new ChatGPTRequest(model, prompt);
-        ChatGPTResponse chatGPTResponse = template.postForObject(apiURL, gptRequest, ChatGPTResponse.class);
+        GeminiRequest geminiRequest = new GeminiRequest(prompt);
+        GeminiResponse geminiResponse = template.postForObject(apiURL, geminiRequest, GeminiResponse.class);
 
-        if (chatGPTResponse != null && !chatGPTResponse.getChoices().isEmpty()) {
+        if (geminiResponse != null && geminiResponse.getTextContent() != null) {
             try {
-                String jsonResponse = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+                String jsonResponse = geminiResponse.getTextContent();
 
 
                 // 백틱(```) 제거
                 jsonResponse = jsonResponse.replace("```json", "").replace("```", "").trim();
-                System.out.println("ChatGPT JSON Response (cleaned): " + jsonResponse);
+                log.debug("Gemini JSON Response (cleaned): {}", jsonResponse);
                 // ChatGPT 응답을 파싱하여 구조화된 데이터로 변환
 
                 // JSON 파싱 시작
@@ -167,7 +172,7 @@ public class DietAIController {
     }
 
     private double calculateDailyCalories(double weightKg, double heightCm, String goal) {
-        double bmr = 66.5 + (13.75 * weightKg) + (5.003 * heightCm) - (6.75 * 25); // 나이는 25로 가정
+        double bmr = 66.5 + (13.75 * weightKg) + (5.003 * heightCm) - (6.75 * defaultAge); // 설정에서 나이 가져옴
         double activityFactor = 1.375; // 보통 활동량 가정
         double targetCalories = bmr * activityFactor;
         switch (goal.toLowerCase()) {

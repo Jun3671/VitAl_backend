@@ -18,11 +18,14 @@ public class DietService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-    @Value("${openai.model}")
+    @Value("${gemini.model}")
     private String model;
 
-    @Value("${openai.api.url}")
+    @Value("${gemini.api.url}")
     private String apiURL;
+
+    @Value("${app.defaults.age}")
+    private int defaultAge;
 
     /**
      * 일일 필요 칼로리 계산
@@ -32,7 +35,7 @@ public class DietService {
      * @return 일일 필요 칼로리
      */
     public double calculateDailyCalories(double weightKg, double heightCm, String goal) {
-        double bmr = 66.5 + (13.75 * weightKg) + (5.003 * heightCm) - (6.75 * 25); // 나이는 25로 가정
+        double bmr = 66.5 + (13.75 * weightKg) + (5.003 * heightCm) - (6.75 * defaultAge); // 설정에서 나이 가져옴
         double activityFactor = 1.375; // 보통 활동량 가정
         double targetCalories = bmr * activityFactor;
 
@@ -48,7 +51,7 @@ public class DietService {
     }
 
     /**
-     * ChatGPT API를 사용하여 식단 추천 생성
+     * Gemini API를 사용하여 식단 추천 생성
      * @param member 회원 정보
      * @param request 식단 추천 요청 정보
      * @return 식단 추천 응답
@@ -62,14 +65,14 @@ public class DietService {
 
         String prompt = buildDietPrompt(height, weight, bmi, dailyCalories, request.getGoal(), request.getFoodType());
 
-        ChatGPTRequest gptRequest = new ChatGPTRequest(model, prompt);
-        ChatGPTResponse chatGPTResponse = restTemplate.postForObject(apiURL, gptRequest, ChatGPTResponse.class);
+        GeminiRequest geminiRequest = new GeminiRequest(prompt);
+        GeminiResponse geminiResponse = restTemplate.postForObject(apiURL, geminiRequest, GeminiResponse.class);
 
-        if (chatGPTResponse == null || chatGPTResponse.getChoices().isEmpty()) {
-            throw new Exception("ChatGPT API 응답이 비어있습니다.");
+        if (geminiResponse == null || geminiResponse.getTextContent() == null) {
+            throw new Exception("Gemini API 응답이 비어있습니다.");
         }
 
-        String jsonResponse = chatGPTResponse.getChoices().get(0).getMessage().getContent();
+        String jsonResponse = geminiResponse.getTextContent();
         jsonResponse = jsonResponse.replace("```json", "").replace("```", "").trim();
 
         return parseDietRecommendation(jsonResponse, height, weight, bmi, dailyCalories, request);

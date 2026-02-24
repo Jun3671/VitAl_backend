@@ -1,7 +1,7 @@
 package VitAI.injevital.controller;
 
-import VitAI.injevital.dto.ChatGPTRequest;
-import VitAI.injevital.dto.ChatGPTResponse;
+import VitAI.injevital.dto.GeminiRequest;
+import VitAI.injevital.dto.GeminiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +13,10 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 @RequestMapping("/bot")
 public class CustomBotController {
-    @Value("${openai.model}")
+    @Value("${gemini.model}")
     private String model;
 
-    @Value("${openai.api.url}")
+    @Value("${gemini.api.url}")
     private String apiURL;
 
     @Autowired
@@ -25,15 +25,15 @@ public class CustomBotController {
     @GetMapping("/chat")
     public String chat(@RequestParam(name = "prompt") String prompt) {
         try {
-            ChatGPTRequest request = new ChatGPTRequest(model, prompt);
-            log.debug("Request to ChatGPT: {}", request);
+            GeminiRequest request = new GeminiRequest(prompt);
+            log.debug("Request to Gemini: {}", request);
 
-            ChatGPTResponse chatGPTResponse = template.postForObject(apiURL, request, ChatGPTResponse.class);
-            log.debug("Response from ChatGPT: {}", chatGPTResponse);
+            GeminiResponse geminiResponse = template.postForObject(apiURL, request, GeminiResponse.class);
+            log.debug("Response from Gemini: {}", geminiResponse);
 
-            return chatGPTResponse.getChoices().get(0).getMessage().getContent();
+            return geminiResponse.getTextContent();
         } catch (RestClientException e) {
-            log.error("ChatGPT API 호출 실패: ", e);
+            log.error("Gemini API 호출 실패: ", e);
             return "챗봇 서비스 오류 발생";
         } catch (Exception e) {
             log.error("예상치 못한 에러: ", e);

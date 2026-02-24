@@ -7,6 +7,7 @@ import VitAI.injevital.jwt.TokenProvider;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -31,13 +33,13 @@ public class AuthController {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequest.getMemberId(), loginRequest.getMemberPassword());
-        System.out.println("authenticationToken = " + authenticationToken);
+        log.debug("Authentication token created for user");
         // authenticate 메소드가 실행이 될 때 CustomUserDetailsService class의 loadUserByUsername 메소드가 실행
         // 해당 객체를 SecurityContextHolder에 저장하고
 
         try {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            System.out.println("Authentication result: " + authentication);
+            log.debug("Authentication successful for user: {}", authentication.getName());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             // authentication 객체를 createToken 메소드를 통해서 JWT Token을 생성
             String jwt = tokenProvider.createToken(authentication);
@@ -50,8 +52,7 @@ public class AuthController {
             return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
 
         } catch (Exception e) {
-            System.out.println("Authentication failed: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Authentication failed", e);
             throw e;
         }
     }

@@ -11,10 +11,10 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Configuration
-public class OpenAiConfig {
+public class GeminiConfig {
 
-    @Value("${openai.api.key}")
-    private String openAiKey;
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
 
     @Bean
     public RestTemplate template() {
@@ -22,10 +22,10 @@ public class OpenAiConfig {
 
         ClientHttpRequestInterceptor interceptor = (request, body, execution) -> {
             // API 키 로깅 (실제 값은 보안을 위해 마스킹)
-            log.debug("API Key present: {}", openAiKey != null && !openAiKey.isEmpty());
+            log.debug("API Key present: {}", geminiApiKey != null && !geminiApiKey.isEmpty());
 
-            // 헤더 설정
-            request.getHeaders().setBearerAuth(openAiKey);
+            // Gemini API는 x-goog-api-key 헤더 사용 (Bearer 토큰 방식이 아님)
+            request.getHeaders().set("x-goog-api-key", geminiApiKey);
             request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
             // 요청 로깅
@@ -39,8 +39,9 @@ public class OpenAiConfig {
         restTemplate.getInterceptors().add(interceptor);
         return restTemplate;
     }
+
     @PostConstruct
     void init() {
-        log.debug("API Key length: {}", openAiKey != null ? openAiKey.length() : 0);
+        log.debug("Gemini API Key length: {}", geminiApiKey != null ? geminiApiKey.length() : 0);
     }
 }

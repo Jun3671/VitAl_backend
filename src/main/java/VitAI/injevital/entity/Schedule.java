@@ -18,7 +18,7 @@ public class Schedule extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)  // LAZY에서 EAGER로 변경
+    @ManyToOne(fetch = FetchType.LAZY)  // N+1 문제 방지를 위해 LAZY 로딩 사용
     @JoinColumn(name = "member_id")
     private Member member;
 

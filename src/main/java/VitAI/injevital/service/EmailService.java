@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
@@ -16,9 +17,11 @@ import java.util.Random;
 public class EmailService {
 
     private final MemberRepository memberRepository;
-
-
     private final JavaMailSender emailSender;
+
+    @Value("${spring.mail.username}")
+    private String setFrom;
+
     private Map<String, String> authCodes = new HashMap<>();
     private String authNum; // 인증 번호
 
@@ -48,7 +51,6 @@ public class EmailService {
     // 메일 양식 작성
     public MimeMessage createEmailForm(String email) throws MessagingException, UnsupportedEncodingException {
         createCode();
-        String setFrom = "testtest12@gmail.com";
         String toEmail = email;
         String title = "데옹 인증번호 테스트";
 

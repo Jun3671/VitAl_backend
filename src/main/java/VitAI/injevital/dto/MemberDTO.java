@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import VitAI.injevital.entity.Member;
-import org.checkerframework.checker.units.qual.N;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @NoArgsConstructor
